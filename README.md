@@ -1,7 +1,7 @@
 # 🍕 munchmap
 
-**Skyscanner for food, built for broke college students.**
-munchmap finds the cheapest way to eat near you. It compares student discounts, weekly specials, loyalty programs, delivery-app fees and pickup, so you don't have to check five apps.
+**Skyscanner for food, built for broke college students.** 👉 **[Open the app](https://sizzleman.github.io/munchmap/)**
+munchmap finds the cheapest way to eat near you, and **every price is all-in** (tax, fees and tip included), so there are no surprises at checkout. It compares student discounts, weekly specials, loyalty programs, delivery-app fees and pickup, so you don't have to check five apps.
 
 Free · open source · no accounts · no tracking · runs inside the AI you already use.
 
@@ -22,7 +22,7 @@ There are three ways in. Pick whichever is easiest.
 
 | | Best for | Setup |
 |---|---|---|
-| 🌐 **Web app** | Anyone on a phone or laptop | Open the site (published to GitHub Pages when the repo goes public) and pick your campus. You can install it to your home screen. |
+| 🌐 **Web app** | Anyone on a phone or laptop | **[sizzleman.github.io/munchmap](https://sizzleman.github.io/munchmap/)**: pick your campus. You can install it to your home screen. |
 | 🔌 **Hosted AI connector** | ChatGPT, Claude web/mobile, Grok, Meta Muse | Add the URL `https://<munchmap-worker>/mcp` as a connector. See [apps/worker](apps/worker/README.md). |
 | 💻 **Local AI connector** | Claude Desktop/Code, Gemini CLI, Cursor, Antigravity | `npx munchmap-mcp` (once published) or run it from a clone (below) |
 
