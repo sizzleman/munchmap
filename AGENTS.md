@@ -20,7 +20,7 @@ Launch campuses: UIUC, UMass Amherst, UC Santa Cruz, UT Austin, Claremont McKenn
 2. **No server-side scraping of delivery platforms** (DoorDash, Uber Eats, Skip, Grubhub, Talabat, Deliveroo, Too Good To Go, etc.). Allowed data access methods are, in order of preference:
    `official_api` → `open_data` → `community` → `user_side` (runs on the user's own device or session) → `deep_link_only`.
    Every source adapter declares its `access_method`. If you're unsure whether something is allowed, stop and ask.
-3. **Privacy first.** User profiles, subscriptions and location stay on the user's device. No telemetry. Never commit secrets; use `.env` (gitignored) and keep `.env.example` up to date.
+3. **Privacy first.** User profiles, subscriptions and location stay on the user's device. No telemetry. Hosted code (Worker, web) must stay stateless: no accounts, no logging of tool arguments. `packages/core` must stay browser-safe (no `node:` imports outside `node.ts`/`load.ts`). Never commit secrets; use `.env` (gitignored) and keep `.env.example` up to date.
 4. **Trust over coverage.** Every price or deal shown must include its source and `verified_at` date. Never invent deals, prices or fees, and never put plausible-looking fake data in `data/`. Test fixtures go in `**/__fixtures__/` and are clearly fake (e.g. "Example Pizza").
 5. **Attribution.** OpenStreetMap data must show "© OpenStreetMap contributors" (ODbL). Respect the Overpass/Nominatim usage policies: cache results, rate-limit, and send a generic User-Agent with no personal info.
 6. **Regions are data, not code.** Adding a city or country should only mean adding files under `data/` and `regions/`, with no changes in `core`. If you have to change code to add a region, fix the abstraction instead.
@@ -32,15 +32,18 @@ Launch campuses: UIUC, UMass Amherst, UC Santa Cruz, UT Austin, Claremont McKenn
 ## Architecture (target, see docs/PLAN.md §2)
 
 ```
-packages/core/              ✅ Zod schemas, data loader, deal search, effective-price engine, privacy scrubbers
-packages/mcp-server/        ✅ MCP tools: list_coverage, find_deals, find_restaurants (OSM), compare_channels,
-                               get/set_profile, prepare_deal_submission + prompt find_deals_in_my_inbox
+packages/core/              ✅ browser-safe: schemas, deal search, effective price, privacy scrubbers,
+                               submission drafts, OSM lookup.   "@munchmap/core/node" = filesystem loader
+packages/mcp-server/        ✅ server.ts (tool definitions, shared) · index.ts (stdio, local profile)
+                               http.ts (stateless Streamable HTTP) · serve.ts (Node self-host)
+apps/web/                   ✅ static PWA (Vite + vanilla TS); renders community text via textContent only
+apps/worker/                ✅ Cloudflare Worker wrapping http.ts; data baked in at deploy
 packages/sources/<x>/       ⏳ future adapters; each exports { id, accessMethod, regions, fetch() }
-apps/web/                   ⏳ static mobile-first web app (PWA), reads public/data.json
 data/<CC>/<REGION>/         region.yaml (cities + campuses), deals/*.yaml
 data/<CC>/_national/        deals/*.yaml (region "*"), platforms/*.yaml (fees + memberships)
 archive/                    expired deals (moved by the nightly workflow)
-scripts/                    validate-data, build-data, expire-deals, check-licenses
+public/                     PWA assets + generated data.json (served by web app and Pages)
+scripts/                    validate-data, build-data, expire-deals, check-licenses, build-mcp, issue-to-deal (bot)
 ```
 
 ## Commands
@@ -58,6 +61,10 @@ npm run build:data     # data/ → public/data.json
 npm run expire:deals   # move expired deals to archive/
 npm run licenses:check # dependency license gate (add -- --table to list)
 npm run dev:mcp        # run the MCP server on stdio
+npm run serve:mcp      # remote MCP over HTTP at :8787/mcp
+npm run dev:web        # web app at :5173
+npm run build:web      # static site → apps/web/dist
+npm run build:mcp      # npm package → dist/munchmap-mcp
 ```
 
 ## Conventions

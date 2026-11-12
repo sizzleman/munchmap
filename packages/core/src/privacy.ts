@@ -65,3 +65,14 @@ export function looksPersonalCode(code: string): boolean {
   // Mixed random-looking strings like "X7KQ9P2M"
   return c.length >= 8 && digits >= 3 && letters >= 3 && !/^[A-Z]+\d{1,3}$/i.test(c);
 }
+
+const INJECTION =
+  /(ignore (all |any )?(previous|prior|above|earlier) (instructions|prompts|messages)|disregard (the )?(system|previous)|system prompt|you are (now )?(an? )?(ai|assistant|chatbot)|<\/?(system|instructions?|assistant)>|\[\/?INST\])/i;
+
+/**
+ * Community text is read by users' AI agents, so block obvious prompt-injection attempts.
+ * Heuristic only: CI, the submission bot and maintainers are the real safeguards.
+ */
+export function looksLikePromptInjection(text: string): boolean {
+  return INJECTION.test(text);
+}

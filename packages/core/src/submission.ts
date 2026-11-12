@@ -3,10 +3,12 @@
  * WITHOUT sending anything: we scrub personal data, validate, and return a prefilled GitHub
  * issue link the user opens and submits themselves. The user stays in control.
  */
-import { cleanUrl, Deal, looksPersonalCode, scrubText } from "@munchmap/core";
-import { stringify } from "yaml";
 
-export const REPO = process.env.MUNCHMAP_REPO ?? "sizzleman/munchmap";
+import { stringify } from "yaml";
+import { cleanUrl, looksLikePromptInjection, looksPersonalCode, scrubText } from "./privacy.ts";
+import { Deal } from "./schema.ts";
+
+export const DEFAULT_REPO = "sizzleman/munchmap";
 
 const slugify = (s: string) =>
   s
@@ -42,12 +44,21 @@ export interface DraftResult {
   issue_url?: string;
 }
 
-export function prepareSubmission(input: DraftInput, today = new Date()): DraftResult {
+export function prepareSubmission(input: DraftInput, opts: { today?: Date; repo?: string } = {}): DraftResult {
+  const today = opts.today ?? new Date();
+  const repo = opts.repo ?? DEFAULT_REPO;
   const warnings: string[] = [];
   const title = scrubText(input.title);
   const conditions = input.conditions ? scrubText(input.conditions) : null;
   const removed = [...title.removed, ...(conditions?.removed ?? [])];
   if (removed.length) warnings.push(`Removed personal info: ${[...new Set(removed)].join(", ")}`);
+
+  if (looksLikePromptInjection(`${input.title} ${input.brand} ${input.conditions ?? ""}`))
+    return {
+      ok: false,
+      warnings,
+      errors: ["Text contains instructions aimed at AI assistants; please describe only the deal."],
+    };
 
   const source = cleanUrl(input.source_url);
   if (!source)
@@ -98,8 +109,8 @@ export function prepareSubmission(input: DraftInput, today = new Date()): DraftR
     return { ok: false, warnings, errors: parsed.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`) };
 
   const yaml = stringify(parsed.data);
-  const body = `<!-- Submitted via munchmap MCP. Review before submitting: make sure nothing personal is included. -->\n\n\`\`\`yaml\n${yaml}\`\`\`\n`;
-  const issue_url = `https://github.com/${REPO}/issues/new?${new URLSearchParams({
+  const body = `<!-- Submitted via munchmap. Review before submitting: make sure nothing personal is included. -->\n\n\`\`\`yaml\n${yaml}\`\`\`\n`;
+  const issue_url = `https://github.com/${repo}/issues/new?${new URLSearchParams({
     title: `[deal] ${parsed.data.brand}: ${parsed.data.title}`.slice(0, 120),
     labels: "new-deal",
     body,

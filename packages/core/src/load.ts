@@ -1,13 +1,10 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, relative, sep } from "node:path";
 import { parse } from "yaml";
+import type { Dataset } from "./dataset.ts";
 import { Deal, Platform, Region } from "./schema.ts";
 
-export interface Dataset {
-  deals: Deal[];
-  regions: Region[];
-  platforms: Platform[];
-}
+export type { Dataset };
 
 export interface LoadIssue {
   file: string;
@@ -100,16 +97,4 @@ export function loadDataDir(dataDir: string): LoadResult {
       if (!campusSlugs.has(c)) result.issues.push({ file: d.id, message: `unknown campus "${c}"` });
   }
   return result;
-}
-
-/** Load a prebuilt dataset bundle (output of scripts/build-data.ts) from a URL. */
-export async function loadDataUrl(url: string): Promise<Dataset> {
-  const res = await fetch(url, { headers: { "User-Agent": "munchmap" } });
-  if (!res.ok) throw new Error(`Failed to fetch dataset: HTTP ${res.status}`);
-  const json = (await res.json()) as Dataset;
-  return {
-    deals: json.deals.map((d) => Deal.parse(d)),
-    regions: json.regions.map((r) => Region.parse(r)),
-    platforms: json.platforms.map((p) => Platform.parse(p)),
-  };
 }

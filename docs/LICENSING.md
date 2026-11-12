@@ -5,6 +5,18 @@ Nobody outside the project has contributed yet, so this can still change for fre
 
 > This is not legal advice. It's the standard reasoning open-source projects use; for anything commercial, talk to a lawyer.
 
+## What AGPL does and doesn't do
+| You want | Does AGPL do it? |
+|---|---|
+| No closed-source forks | ✅ Yes. Every copy and modification must stay AGPL with source available. |
+| Anyone running a modified copy as a website or service must publish their changes | ✅ Yes (§13). This is the reason we picked AGPL over GPL. |
+| Easy for anyone to use, self-host and contribute | ✅ Yes. Using it carries no obligations, and it's OSI-approved open source. |
+| Nobody can ever charge money for it | ❌ **No.** No open-source license can forbid selling; it's part of the definition of open source. In practice AGPL makes paid clones unattractive: anyone selling munchmap must give buyers the full source, and buyers can legally share it for free. |
+
+If you ever wanted to ban commercial use outright, you'd need a "source-available" license such as PolyForm Noncommercial. That would stop munchmap being open source and would put off contributors. We don't recommend it.
+
+The other protection is the **name**. A license covers code, not names. Once munchmap has real users, consider a short `TRADEMARKS.md` saying forks can't call themselves "munchmap". Many AGPL projects do this.
+
 ## The question that decides it
 > "Do I care if someone takes munchmap, makes it closed-source, and runs it as their own hosted app?"
 

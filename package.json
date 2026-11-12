@@ -9,7 +9,8 @@
     "node": ">=20"
   },
   "workspaces": [
-    "packages/*"
+    "packages/*",
+    "apps/*"
   ],
   "scripts": {
     "test": "vitest run",
@@ -20,11 +21,16 @@
     "build:data": "tsx scripts/build-data.ts",
     "expire:deals": "tsx scripts/expire-deals.ts",
     "dev:mcp": "tsx packages/mcp-server/src/index.ts",
-    "licenses:check": "tsx scripts/check-licenses.ts"
+    "licenses:check": "tsx scripts/check-licenses.ts",
+    "serve:mcp": "tsx packages/mcp-server/src/serve.ts",
+    "build:mcp": "tsx scripts/build-mcp.ts",
+    "dev:web": "npm run build:data && npm run dev -w @munchmap/web",
+    "build:web": "npm run build:data && npm run build -w @munchmap/web"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.7",
     "@types/node": "^26.6.6",
+    "esbuild": "^0.28.2",
     "tsx": "^4.23.15",
     "typescript": "^7.0.2",
     "vitest": "^4.1.12"

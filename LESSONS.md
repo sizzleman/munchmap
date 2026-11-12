@@ -27,6 +27,30 @@ Rules:
 
 ## Log
 
+### 2026-11-12 · sources · Public Overpass servers are flaky
+- **What happened:** In browser testing, overpass-api.de returned 502s and then hung, and one mirror accepted the connection but never replied, so the Nearby tab spun forever.
+- **Lesson:** Every external fetch needs a timeout (`AbortSignal.timeout`) and a fallback. `findRestaurants` tries several public instances with a 12s timeout each. Never assume a free public API is up; show a clear error and let the user retry.
+- **Source:** agent:claude-code (browser test)
+- **Status:** active
+
+### 2026-11-12 · web · Remembered UI state can be invalid in a new context
+- **What happened:** The compare rows saved "ubereats" in localStorage, then the user switched to Dubai (no Uber Eats). The dropdown silently showed "Pickup" while the state still said Uber Eats.
+- **Lesson:** When restoring saved state, re-check it against the current region and data, and snap invalid values to a valid default.
+- **Source:** agent:claude-code (browser test)
+- **Status:** active
+
+### 2026-11-12 · core · Keep core browser-safe
+- **What happened:** The web app and Cloudflare Worker couldn't import `@munchmap/core` while it re-exported a `node:fs` loader.
+- **Lesson:** Filesystem code lives only in `load.ts` and is exported via `@munchmap/core/node`. Check with `esbuild apps/worker/src/index.ts --bundle --platform=browser`. Browsers also can't set `User-Agent` without triggering a CORS preflight, so only send it from servers.
+- **Source:** agent:claude-code
+- **Status:** promoted (→ AGENTS.md rule 3)
+
+### 2026-11-12 · oss · AGPL blocks closed forks, not selling
+- **What happened:** The maintainer wanted "no paid copies, no closed forks, modified hosted copies must publish changes."
+- **Lesson:** AGPL covers the last two. No OSI license can ban selling, but AGPL makes paid clones pointless because buyers get the source. The project name needs trademark protection, which is separate from the license. See docs/LICENSING.md.
+- **Source:** human + agent:claude-code
+- **Status:** active
+
 ### 2026-11-12 · data · Research agents copied an email tracking URL as a source
 - **What happened:** A platform file's `source_url` had Salesforce Marketing Cloud `sfmc_*` params (journey IDs) because the agent found the page through an email CDN link.
 - **Lesson:** Source links must be clean public URLs. `validate:data` now rejects URLs that `cleanUrl` would change, and `sfmc_` is on the tracking-param list. Add any new tracking params you find to `privacy.ts`.

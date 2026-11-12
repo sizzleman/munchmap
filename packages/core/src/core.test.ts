@@ -6,10 +6,10 @@ import {
   effectivePrice,
   findDeals,
   isScheduleActive,
-  loadDataDir,
   looksPersonalCode,
   scrubText,
 } from "./index.ts";
+import { loadDataDir } from "./node.ts";
 
 const fixtures = loadDataDir(join(import.meta.dirname, "__fixtures__", "data"));
 

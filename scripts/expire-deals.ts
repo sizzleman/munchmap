@@ -1,7 +1,8 @@
 /** Move deals whose `expires` date has passed into data/_archive/ (kept for history, not served). */
 import { mkdirSync, renameSync } from "node:fs";
 import { join } from "node:path";
-import { isExpired, loadDataDir } from "../packages/core/src/index.ts";
+import { isExpired } from "../packages/core/src/index.ts";
+import { loadDataDir } from "../packages/core/src/node.ts";
 
 const root = join(import.meta.dirname, "..");
 const dataDir = join(root, "data");

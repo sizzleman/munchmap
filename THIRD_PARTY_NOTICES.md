@@ -11,7 +11,7 @@ Run `npm run licenses:check -- --table` to print the full list of transitive dep
 
 | Source | Used for | License | How we credit / comply |
 |---|---|---|---|
-| [OpenStreetMap](https://www.openstreetmap.org/copyright) via the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API) | Restaurant names, locations, cuisine, hours, websites | [ODbL 1.0](https://opendatacommons.org/licenses/odbl/) | Every response that includes OSM data shows "© OpenStreetMap contributors". Queries run live and are cached briefly; OSM data is **not** copied into `data/`. We follow the Overpass usage policy: rate-limited, cached, and identified with a generic User-Agent. |
+| [OpenStreetMap](https://www.openstreetmap.org/copyright) via the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API) | Restaurant names, locations, cuisine, hours, websites | [ODbL 1.0](https://opendatacommons.org/licenses/odbl/) | Every response that includes OSM data shows "© OpenStreetMap contributors". Queries run live and are cached briefly; OSM data is **not** copied into `data/`. We follow the Overpass usage policy: rate-limited, cached, and identified with a generic User-Agent. We fall back across the public instances run by [FOSSGIS (overpass-api.de)](https://overpass-api.de), [private.coffee](https://overpass.private.coffee) and [Kumi Systems](https://overpass.kumi.systems). |
 | munchmap community registry (`data/`) | Deals, campuses, regions, platform memberships | [CC BY-SA 4.0](data/LICENSE) | Contributors are credited through git history. Each deal links back to its original public `source_url`. |
 | Public web pages cited in `source_url` fields | Facts about deals (prices, days, conditions) | Owned by their publishers | We record **facts** in our own words and link to the source. We don't copy marketing copy, logos or images. |
 
@@ -23,6 +23,8 @@ Run `npm run licenses:check -- --table` to print the full list of transitive dep
 | [zod](https://github.com/colinhacks/zod) | MIT | Schema validation |
 | [yaml](https://github.com/eemeli/yaml) | ISC | YAML parser |
 
+The published `munchmap-mcp` npm bundle and the web app include these runtime dependencies. Their license notices ship alongside (`*.LEGAL.txt`) or are kept in the bundled code.
+
 ## Development dependencies (not distributed)
 
 | Package | License |
@@ -31,6 +33,8 @@ Run `npm run licenses:check -- --table` to print the full list of transitive dep
 | [tsx](https://github.com/privatenumber/tsx) | MIT |
 | [Vitest](https://github.com/vitest-dev/vitest) | MIT |
 | [Biome](https://github.com/biomejs/biome) | MIT OR Apache-2.0 |
+| [Vite](https://github.com/vitejs/vite) (web app build) | MIT |
+| [esbuild](https://github.com/evanw/esbuild) (npm bundle) | MIT |
 
 ## Documents adapted from others
 

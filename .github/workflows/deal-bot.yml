@@ -1,0 +1,60 @@
+name: Deal bot
+# Turns "new-deal" issues that contain a YAML block (from the web app or MCP tool) into a PR.
+# Security: the issue body is untrusted. It's passed via env (never interpolated into a shell),
+# parsed and validated in TypeScript, and the result is a PR that a maintainer must still review & merge.
+on:
+  issues:
+    types: [opened, edited, labeled]
+permissions:
+  contents: write
+  pull-requests: write
+  issues: write
+concurrency:
+  group: deal-bot-${{ github.event.issue.number }}
+  cancel-in-progress: true
+jobs:
+  convert:
+    if: contains(github.event.issue.labels.*.name, 'new-deal') && github.event.issue.state == 'open'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - id: convert
+        env:
+          ISSUE_BODY: ${{ github.event.issue.body }}
+          ISSUE_NUMBER: ${{ github.event.issue.number }}
+        run: |
+          npx tsx scripts/issue-to-deal.ts > result.json
+          echo "status=$(node -p 'require("./result.json").status')" >> "$GITHUB_OUTPUT"
+      - if: steps.convert.outputs.status == 'created'
+        run: npm run validate:data
+      - if: steps.convert.outputs.status == 'created'
+        id: pr
+        uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bot/deal-${{ github.event.issue.number }}
+          title: "data: deal from #${{ github.event.issue.number }}"
+          commit-message: "data: add deal from #${{ github.event.issue.number }}"
+          add-paths: data/**
+          body: |
+            Automated from #${{ github.event.issue.number }}. Personal info scrubbing and validation passed.
+            **Maintainer:** open the source link and confirm the deal is real and current before merging.
+            Closes #${{ github.event.issue.number }}
+          labels: data
+      - name: Comment on issue
+        if: always() && steps.convert.outputs.status != ''
+        env:
+          GH_TOKEN: ${{ github.token }}
+          ISSUE: ${{ github.event.issue.number }}
+          PR_URL: ${{ steps.pr.outputs.pull-request-url }}
+        run: |
+          STATUS=$(node -p 'require("./result.json").status')
+          if [ "$STATUS" = "created" ]; then
+            gh issue comment "$ISSUE" --body "Thanks! 🍕 Opened ${PR_URL:-a PR} with this deal. A maintainer will verify the source and merge it."
+          else
+            node -e 'const r=require("./result.json");require("fs").writeFileSync("msg.txt","Thanks for the submission! A maintainer will convert this one by hand.\n\nReason: "+r.reason)'
+            gh issue edit "$ISSUE" --add-label needs-triage
+            gh issue comment "$ISSUE" --body-file msg.txt
+          fi

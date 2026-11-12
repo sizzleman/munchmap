@@ -1,0 +1,11 @@
+{
+  "name": "munchmap",
+  "short_name": "munchmap",
+  "description": "Cheap eats near campus: student deals and the real price across pickup and delivery apps.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#fffaf3",
+  "theme_color": "#e8590c",
+  "icons": [{ "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }]
+}

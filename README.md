@@ -17,32 +17,39 @@ Free · open source · no accounts · no tracking · runs inside the AI you alre
 
 We never scrape delivery apps and never place orders for you. [Why?](docs/PLAN.md#1-the-hard-truth-first-where-does-the-data-come-from)
 
-## Quickstart (2 minutes)
-Needs [Node.js 20+](https://nodejs.org).
+## Use it
+There are three ways in. Pick whichever is easiest.
+
+| | Best for | Setup |
+|---|---|---|
+| 🌐 **Web app** | Anyone on a phone or laptop | Open the site (published to GitHub Pages when the repo goes public) and pick your campus. You can install it to your home screen. |
+| 🔌 **Hosted AI connector** | ChatGPT, Claude web/mobile, Grok, Meta Muse | Add the URL `https://<munchmap-worker>/mcp` as a connector. See [apps/worker](apps/worker/README.md). |
+| 💻 **Local AI connector** | Claude Desktop/Code, Gemini CLI, Cursor, Antigravity | `npx munchmap-mcp` (once published) or run it from a clone (below) |
+
+### Run from a clone (Node.js 20+)
 ```bash
 git clone https://github.com/sizzleman/munchmap.git
 cd munchmap
 npm install
-npm test            # make sure everything works
+npm test             # make sure everything works
+npm run dev:web      # web app at http://localhost:5173
+npm run serve:mcp    # remote-style MCP endpoint at http://localhost:8787/mcp
 ```
 
-### Connect it to your AI
-**Claude Desktop:** Settings → Developer → Edit Config, then add:
+### Connect a local AI app
+**Claude Code:** `claude mcp add munchmap -- npx tsx /ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts`
+
+**Claude Desktop:** Settings → Developer → Edit Config:
 ```json
 {
   "mcpServers": {
-    "munchmap": {
-      "command": "npx",
-      "args": ["tsx", "/ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts"]
-    }
+    "munchmap": { "command": "npx", "args": ["tsx", "/ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts"] }
   }
 }
 ```
-**Claude Code:** `claude mcp add munchmap -- npx tsx /ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts`
+Once `munchmap-mcp` is on npm, the config becomes `"command": "npx", "args": ["-y", "munchmap-mcp"]`.
 
-**Gemini CLI / Cursor / Antigravity / others:** add the same `command` + `args` as a stdio MCP server in that tool's MCP settings.
-
-**ChatGPT:** ChatGPT connects to *remote* MCP servers. A hosted endpoint is on the [roadmap](docs/PLAN.md).
+**Gemini CLI / Cursor / Antigravity / others:** add the same `command` + `args` as a stdio MCP server.
 
 Then try:
 - "Set my home campus to uiuc. I have DashPass."
@@ -58,7 +65,7 @@ Then try:
 | `find_deals` | Deals near a campus or city: filter by pickup/delivery, student-only, open now, price |
 | `find_restaurants` | Nearby restaurants from OpenStreetMap |
 | `compare_channels` | True total per app or pickup: fees, tax, tip, memberships |
-| `get_profile` / `set_profile` | Your preferences, saved only on your device |
+| `get_profile` / `set_profile` | Your preferences, saved only on your device (local connector only) |
 | `prepare_deal_submission` | Turns a deal you found into a scrubbed, prefilled submission. Nothing is sent until you click. |
 
 ## Contribute: no coding needed

@@ -1,0 +1,16 @@
+{
+  "name": "@munchmap/worker",
+  "version": "0.2.0",
+  "private": true,
+  "description": "munchmap remote MCP endpoint on Cloudflare Workers (free tier).",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "scripts": {
+    "deploy": "npx wrangler@4 deploy",
+    "dev": "npx wrangler@4 dev"
+  },
+  "dependencies": {
+    "@munchmap/core": "0.1.0",
+    "@munchmap/mcp-server": "0.2.0"
+  }
+}

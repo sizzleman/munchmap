@@ -1,6 +1,7 @@
 /** Validate everything under data/ (schema + cross-file checks). Exit 1 on any issue. */
 import { join } from "node:path";
-import { cleanUrl, isExpired, loadDataDir } from "../packages/core/src/index.ts";
+import { cleanUrl, isExpired, looksLikePromptInjection } from "../packages/core/src/index.ts";
+import { loadDataDir } from "../packages/core/src/node.ts";
 
 const dataDir = join(import.meta.dirname, "..", "data");
 const { deals, regions, platforms, issues } = loadDataDir(dataDir);
@@ -34,10 +35,8 @@ for (const p of platforms)
   }
 
 // Free-text fields are read by users' AI agents: block obvious prompt-injection attempts.
-const INJECTION =
-  /(ignore (all |any )?(previous|prior|above) (instructions|prompts)|system prompt|you are (now )?(an? )?(ai|assistant)|<\/?(system|instructions?)>)/i;
 for (const d of deals)
-  if (INJECTION.test(`${d.title} ${d.conditions ?? ""} ${d.brand}`))
+  if (looksLikePromptInjection(`${d.title} ${d.conditions ?? ""} ${d.brand}`))
     issues.push({ file: d.id, message: "text looks like a prompt-injection attempt" });
 
 for (const w of warnings) console.warn(`⚠️  ${w}`);

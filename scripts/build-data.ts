@@ -1,7 +1,7 @@
 /** Bundle data/ into public/data.json for the web app and remote MCP use. */
 import { mkdirSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
-import { loadDataDir } from "../packages/core/src/index.ts";
+import { loadDataDir } from "../packages/core/src/node.ts";
 
 const root = join(import.meta.dirname, "..");
 const { issues, ...dataset } = loadDataDir(join(root, "data"));

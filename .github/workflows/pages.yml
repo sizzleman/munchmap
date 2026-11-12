@@ -1,0 +1,27 @@
+name: Deploy web app
+# Publishes apps/web (and data.json for MCP/npx users) to GitHub Pages.
+# GitHub Pages needs a public repo (or a paid plan for private repos), so this skips while the repo is private.
+on:
+  push: { branches: [main] }
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+concurrency: { group: pages, cancel-in-progress: true }
+jobs:
+  deploy:
+    if: ${{ !github.event.repository.private }}
+    runs-on: ubuntu-latest
+    environment: { name: github-pages, url: "${{ steps.deploy.outputs.page_url }}" }
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run build:web
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v4
+        with: { path: apps/web/dist }
+      - id: deploy
+        uses: actions/deploy-pages@v4

@@ -1,0 +1,9 @@
+# Deploy: npm install && npm run build:data && cd apps/worker && npx wrangler@4 deploy
+# Needs a free Cloudflare account (no credit card). See apps/worker/README.md.
+name = "munchmap-mcp"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+compatibility_flags = ["nodejs_compat"]
+
+[observability]
+enabled = false   # privacy: don't collect request logs

@@ -2,7 +2,7 @@
 
 > Skyscanner for food, built for broke college students. A free, open-source tool that finds the cheapest and best food near you for pickup and delivery. It pulls together deals from delivery apps, restaurants' own sites and apps, loyalty programs, surplus-food apps and student discounts.
 
-Last updated: 2026-11-12 · Status: **Phase 1 in progress**
+Last updated: 2026-11-12 · Status: **Phase 1 nearly done · Phase 2 started**
 
 ## Launch coverage
 | Campus | slug | City | Region |
@@ -63,17 +63,19 @@ Total running cost to the project: **$0**. Users bring their own AI. See `docs/P
 - [ ] **Seed data:** 10+ verified deals per campus. Campus captains handle this; research agents found it hard to verify local deals from public pages alone. Gaps: CMC (0), Austin (1 + national), Western/UBC/UofT (mostly on-campus meal plans).
 - [ ] Verify flagged platform prices (Grubhub+, Deliveroo Plus, talabat pro, noon One, Uber One CA annual)
 - [ ] Add US sales-tax data for the 5 US cities (good first issues)
-- [ ] `apps/web`: static PWA (pick a campus → deals now → nearby restaurants → "compare channels" calculator)
-- [ ] Publish the MCP server to npm (needs a build step) so the setup becomes `npx munchmap-mcp`
-- [ ] Bot that converts "New deal" issues into PRs (GitHub Action)
+- [x] `apps/web`: static PWA with Deals, Compare (real-price calculator + memberships), Nearby (OSM) and Share a deal (scrubbed → prefilled issue)
+- [x] `npm run build:mcp` produces a self-contained `munchmap-mcp` package. **To do:** publish it (needs your npm account)
+- [x] Deal bot: issues with a YAML block (from the web app or MCP) become PRs automatically; plain forms get labeled `needs-triage`
 - [ ] **Go public:** run gitleaks over the history, enable branch protection, Dependabot, secret scanning, private vulnerability reporting and Discussions, install the DCO app, and seed 10 good first issues
 
 ### Phase 2: Personalization and easy submissions
+- [ ] Auto-deploy the Worker from CI (`CLOUDFLARE_API_TOKEN` secret) whenever `data/` changes
+- [ ] Cache OSM results in Workers KV (free tier) to go easy on public Overpass servers
 - [ ] Profile-aware ranking (diet, budget, memberships you already pay for, loyalty programs)
 - [ ] Screenshot/link upload with local extraction (web) and the same scrub-and-review flow
 - [ ] Telegram bot (self-hostable; BYO AI key or local Ollama)
 - [ ] Community verification: "still valid?" votes; deals with many 👎 get re-checked
-- [ ] Remote MCP endpoint on a free Cloudflare Worker, so ChatGPT and mobile apps can connect without a local install
+- [x] Remote MCP endpoint (stateless HTTP; Cloudflare Worker or Node). **To do:** deploy it (needs your free Cloudflare account) and submit it to the Meta Muse connector catalog
 - [ ] Optional anonymous submission Worker for people without GitHub accounts
 
 ### Phase 3: Live prices, notifications, ordering hand-off
@@ -90,11 +92,11 @@ Placing orders server-side, storing payment details, scraping delivery platforms
 | Integration | Feasibility | Notes |
 |---|---|---|
 | Claude (Desktop/Code), Gemini CLI, Cursor, Antigravity | ✅ Now | Local stdio MCP |
-| ChatGPT | Phase 2 | Needs a remote MCP endpoint (free Cloudflare Worker) |
-| Grok | Phase 2 | xAI supports remote MCP tools through its API; same remote endpoint |
+| ChatGPT | ✅ once deployed | Remote MCP endpoint built (`apps/worker`) |
+| Grok | ✅ once deployed | xAI remote MCP tools → same endpoint |
 | Email deal extraction | ✅ Now | Uses the user's own AI email connector plus our scrub-and-review tools |
 | Computer-use ordering | Phase 3 | User-initiated hand-off only (see above) |
-| "Muse bot" | ❓ | Need to know which product is meant |
+| Meta Muse | Catalog submission | The consumer app has no custom MCP setting yet. Submit the hosted endpoint at Meta's developer platform (it goes through review), or use Muse Code, which supports MCP. |
 
 ## 5. How the project learns over time
 `AGENTS.md` (rules) ← promoted from `LESSONS.md` (shared log) ← written by humans and agents after every surprise. Skills encode repeatable workflows. Subagents on Haiku handle cheap bulk work (research, validation), and Sonnet handles code and reviews. See the table in AGENTS.md.
