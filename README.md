@@ -23,7 +23,7 @@ There are three ways in. Pick whichever is easiest.
 | | Best for | Setup |
 |---|---|---|
 | 🌐 **Web app** | Anyone on a phone or laptop | **[sizzleman.github.io/munchmap](https://sizzleman.github.io/munchmap/)**: pick your campus. You can install it to your home screen. |
-| 🔌 **Hosted AI connector** | ChatGPT, Claude web/mobile, Grok, Meta Muse | Add the URL `https://<munchmap-worker>/mcp` as a connector. See [apps/worker](apps/worker/README.md). |
+| 🔌 **Hosted AI connector** | ChatGPT, Claude web/mobile, Grok, Meta Muse | Add the URL **`https://munchmap-mcp.munchmap.workers.dev/mcp`** as a connector. See [apps/worker](apps/worker/README.md). |
 | 💻 **Local AI connector** | Claude Desktop/Code, Gemini CLI, Cursor, Antigravity | `npx munchmap-mcp` (once published) or run it from a clone (below) |
 
 ### Run from a clone (Node.js 20+)

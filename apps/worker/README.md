@@ -1,6 +1,6 @@
 # munchmap remote MCP endpoint (Cloudflare Worker)
 
-A hosted, **stateless** MCP endpoint at `https://<your-worker>.workers.dev/mcp`. It lets people use munchmap from AI apps that can't run local servers: ChatGPT, Grok, Claude on web and mobile, and Meta Muse (through a connector submission). Nobody has to install anything.
+A hosted, **stateless** MCP endpoint at `https://munchmap-mcp.munchmap.workers.dev/mcp`. It lets people use munchmap from AI apps that can't run local servers: ChatGPT, Grok, Claude on web and mobile, and Meta Muse (through a connector submission). Nobody has to install anything.
 
 **Cost:** $0. The Cloudflare Workers free plan allows 100,000 requests a day with no credit card.
 **Privacy:** no accounts, no sessions and no profile storage. Request logging (`observability`) is disabled in `wrangler.toml`. Profile tools are disabled here; users pass memberships as tool arguments instead.
@@ -21,11 +21,11 @@ Self-hosting without Cloudflare: `npm run serve:mcp` serves the same endpoint at
 ## Connect AI apps
 | App | How |
 |---|---|
-| **ChatGPT** | Settings → Apps & Connectors → Advanced → Developer mode → add a connector with URL `https://<worker>/mcp` (no auth) |
-| **Claude (web/desktop/mobile)** | Settings → Connectors → Add custom connector → URL `https://<worker>/mcp` |
-| **Grok (xAI API)** | Add a remote MCP tool with `server_url: https://<worker>/mcp` |
+| **ChatGPT** | Settings → Apps & Connectors → Advanced → Developer mode → add a connector with URL `https://munchmap-mcp.munchmap.workers.dev/mcp` (no auth) |
+| **Claude (web/desktop/mobile)** | Settings → Connectors → Add custom connector → URL `https://munchmap-mcp.munchmap.workers.dev/mcp` |
+| **Grok (xAI API)** | Add a remote MCP tool with `server_url: https://munchmap-mcp.munchmap.workers.dev/mcp` |
 | **Meta Muse** | The consumer app doesn't take custom MCP URLs yet. Submit munchmap as a connector at Meta's developer platform (it goes through review), or use Muse Code, which supports MCP. |
-| **Gemini CLI / Cursor / Antigravity** | Add an HTTP MCP server with URL `https://<worker>/mcp`, or use the local `npx munchmap-mcp` |
+| **Gemini CLI / Cursor / Antigravity** | Add an HTTP MCP server with URL `https://munchmap-mcp.munchmap.workers.dev/mcp`, or use the local `npx munchmap-mcp` |
 
 The menu names above change often; check each app's current docs.
 

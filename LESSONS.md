@@ -27,6 +27,12 @@ Rules:
 
 ## Log
 
+### 2026-11-12 · oss · Hosting and registries leak maintainer identity
+- **What happened:** Cloudflare named the workers.dev subdomain after the maintainer's email username, which made it public in the connector URL. npm also shows every maintainer's account email in public package metadata.
+- **Lesson:** Before publishing anything, check what identity it exposes. Use a project-named subdomain (`munchmap.workers.dev`). Give npm accounts an email alias, not a personal address, and commit with the GitHub noreply email. Turn off CLI telemetry (`wrangler telemetry disable`). Renaming a workers.dev subdomain means DELETE then PUT on `/accounts/{id}/workers/subdomain`, and the new DNS takes a few minutes.
+- **Source:** human + agent:claude-code
+- **Status:** active
+
 ### 2026-11-12 · sources · Public Overpass servers are flaky
 - **What happened:** In browser testing, overpass-api.de returned 502s and then hung, and one mirror accepted the connection but never replied, so the Nearby tab spun forever.
 - **Lesson:** Every external fetch needs a timeout (`AbortSignal.timeout`) and a fallback. `findRestaurants` tries several public instances with a 12s timeout each. Never assume a free public API is up; show a clear error and let the user retry.
