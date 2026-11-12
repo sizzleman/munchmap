@@ -3,12 +3,30 @@ region: CA
 name: California
 currency: USD
 timezone: America/Los_Angeles
-tax: null # TODO: CA sales tax varies by city (Santa Cruz vs Claremont); add with source_url
+tax: null # set per city below (US rates vary by city)
 tipping: { customary: true, default_percent: 15 }
 platforms: [doordash, ubereats, grubhub]
 cities:
-  - { slug: santa-cruz, name: "Santa Cruz", lat: 36.9741, lon: -122.0308 }
-  - { slug: claremont, name: "Claremont", lat: 34.0967, lon: -117.7198 }
+  - slug: santa-cruz
+    name: "Santa Cruz"
+    lat: 36.9741
+    lon: -122.0308
+    tax:
+      rate_bps: 975
+      included_in_menu_price: false
+      note: "CDTFA rate effective 2026-10-01. Hot prepared food and food eaten on premises are taxable; some cold to-go food is not."
+      source_url: https://cdtfa.ca.gov/taxes-and-fees/rates.aspx
+      verified_at: 2026-11-12
+  - slug: claremont
+    name: "Claremont"
+    lat: 34.0967
+    lon: -117.7198
+    tax:
+      rate_bps: 1025
+      included_in_menu_price: false
+      note: "CDTFA rate effective 2026-10-01 (up from 9.75%). Hot prepared food and food eaten on premises are taxable; some cold to-go food is not."
+      source_url: https://cdtfa.ca.gov/taxes-and-fees/rates.aspx
+      verified_at: 2026-11-12
 campuses:
   - { slug: ucsc, name: "University of California, Santa Cruz", city: santa-cruz, lat: 36.9914, lon: -122.0609 }
   - { slug: cmc, name: "Claremont McKenna College", city: claremont, lat: 34.1017, lon: -117.7092 }

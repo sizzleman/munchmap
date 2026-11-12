@@ -27,7 +27,8 @@ Launch campuses: UIUC, UMass Amherst, UC Santa Cruz, UT Austin, Claremont McKenn
 7. **Money is integers.** Store amounts in minor units (cents/fils) with an ISO 4217 currency code. Never use floats for money.
 8. **Credit everything.** Each new dependency, data source, or adapted doc goes into `THIRD_PARTY_NOTICES.md` in the same PR. Licenses must be AGPL-3.0 compatible (`npm run licenses:check`). Code is AGPL-3.0-or-later, `data/` is CC BY-SA 4.0, and commits need DCO sign-off (`git commit -s`).
 9. **Clean sources only.** A `source_url` must be a public page with no email tracking or personal query parameters (the validator enforces this). Record facts in your own words. Never copy marketing text, logos, or images.
-10. **The user stays in control.** Nothing gets submitted, ordered, or shared on a user's behalf without an explicit action from them. Tools draft and the user sends.
+10. **Show all-in prices.** Any price shown to users (web, MCP, bots) leads with the out-the-door total (food + delivery/service fees + tax + customary tip) from `dealAllIn` / `compareChannels`, followed by the breakdown. Never show a bare menu price as the headline. If something can't be included (e.g. unknown app fees), say so next to the price.
+11. **The user stays in control.** Nothing gets submitted, ordered, or shared on a user's behalf without an explicit action from them. Tools draft and the user sends.
 
 ## Architecture (target, see docs/PLAN.md §2)
 

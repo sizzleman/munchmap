@@ -24,6 +24,8 @@ export interface ChannelQuote {
 export interface TaxRule {
   rate_bps: number;
   included_in_menu_price: boolean;
+  /** Default true. */
+  fees_taxable?: boolean;
 }
 
 export interface PriceBreakdown {
@@ -50,7 +52,7 @@ export function effectivePrice(q: ChannelQuote, currency: Currency, tax: TaxRule
   const promo = Math.min(q.promo_minor ?? 0, subtotal);
   // Simplification: tax applies to discounted subtotal + fees. Real rules vary by jurisdiction
   // (see LESSONS.md / region.yaml notes); the result is labeled an estimate everywhere it is shown.
-  const taxable = subtotal - promo + fees;
+  const taxable = subtotal - promo + (tax?.fees_taxable === false ? 0 : fees);
   const taxAmt = tax && !tax.included_in_menu_price ? bps(taxable, tax.rate_bps) : 0;
   const tip = bps(subtotal, q.tip_bps ?? 0);
   return {

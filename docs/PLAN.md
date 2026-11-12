@@ -62,7 +62,8 @@ Total running cost to the project: **$0**. Users bring their own AI. See `docs/P
 - [x] Validator: schema, IDs, currency, stale/expired deals, tracking-URL and prompt-injection checks
 - [ ] **Seed data:** 10+ verified deals per campus. Campus captains handle this; research agents found it hard to verify local deals from public pages alone. Gaps: CMC (0), Austin (1 + national), Western/UBC/UofT (mostly on-campus meal plans).
 - [ ] Verify flagged platform prices (Grubhub+, Deliveroo Plus, talabat pro, noon One, Uber One CA annual)
-- [ ] Add US sales-tax data for the 5 US cities (good first issues)
+- [x] US prepared-food tax for all 5 US cities (city-level: Champaign 9.75%, Amherst 7%, Austin 8.25%, Santa Cruz 9.75%, Claremont 10.25%)
+- [x] **All-in pricing everywhere:** deal cards, Compare and MCP results lead with the out-the-door price (food + fees + tax + tip) and show a receipt-style breakdown
 - [x] `apps/web`: static PWA with Deals, Compare (real-price calculator + memberships), Nearby (OSM) and Share a deal (scrubbed → prefilled issue)
 - [x] `npm run build:mcp` produces a self-contained `munchmap-mcp` package. **To do:** publish it (needs your npm account)
 - [x] Deal bot: issues with a YAML block (from the web app or MCP) become PRs automatically; plain forms get labeled `needs-triage`

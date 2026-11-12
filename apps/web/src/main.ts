@@ -10,6 +10,7 @@ import {
   type Dataset,
   type Deal,
   type DealQuery,
+  dealAllIn,
   findDeals,
   findRestaurants,
   formatMoney,
@@ -19,6 +20,7 @@ import {
   prepareSubmission,
   type Region,
   type Restaurant,
+  taxFor,
   type Weekday,
 } from "@munchmap/core";
 import "./style.css";
@@ -187,6 +189,17 @@ const scheduleText = (d: Deal) => {
   return days + time;
 };
 
+/** "Menu $7.99 + tax $0.78 = $8.77 pickup" — the receipt line people actually care about. */
+function allInText(a: NonNullable<ReturnType<typeof dealAllIn>>, tax: ReturnType<typeof taxFor>): string {
+  const m = (n: number) => formatMoney(n, a.currency);
+  const parts = [`Menu ${m(a.menu_minor)}`];
+  if (tax?.included_in_menu_price) parts.push("tax included");
+  else if (!a.tax_unknown) parts.push(`+ tax ${m(a.tax_minor)} (${tax ? tax.rate_bps / 100 : 0}%)`);
+  if (a.tip_minor) parts.push(`+ tip ${m(a.tip_minor)}`);
+  const basis = a.basis === "pickup" ? "for pickup" : a.basis === "dine_in" ? "dining in" : "plus app fees";
+  return `${parts.join(" ")} = ${m(a.total_minor)} ${basis}${a.tax_unknown ? " (tax not yet known here)" : ""}`;
+}
+
 // ---------- views ----------
 function header() {
   const p = place();
@@ -283,6 +296,7 @@ function dealsView() {
   );
 
   function dealList() {
+    if (!p) return h("div", { id: "deal-list" });
     const fresh = findDeals(ds?.deals ?? [], ds?.regions ?? [], { ...q, query: state.query || undefined });
     if (!fresh.length)
       return h(
@@ -296,6 +310,7 @@ function dealsView() {
       { id: "deal-list", class: "cards" },
       ...fresh.map((d) => {
         const live = d.schedule && isScheduleActive(d.schedule, now);
+        const allIn = dealAllIn(d, p.region, p.city);
         const reportUrl = `${REPO_URL}/issues/new?${new URLSearchParams({
           template: "bug.yml",
           title: `[deal issue] ${d.id}`,
@@ -307,9 +322,17 @@ function dealsView() {
             "div",
             { class: "card-top" },
             h("strong", { class: "brand" }, d.brand),
-            h("span", { class: "value" }, valueText(d)),
+            allIn
+              ? h(
+                  "span",
+                  { class: "value", title: "Estimated total you pay" },
+                  `${formatMoney(allIn.total_minor, allIn.currency)}${allIn.excludes.length ? "+" : ""}`,
+                  h("small", {}, allIn.excludes.length ? " before fees" : " all-in"),
+                )
+              : h("span", { class: "value" }, valueText(d)),
           ),
           h("p", { class: "title" }, d.title),
+          allIn ? h("p", { class: "breakdown" }, allInText(allIn, taxFor(p.region, p.city))) : null,
           h(
             "div",
             { class: "badges" },
@@ -338,7 +361,11 @@ function dealsView() {
     "section",
     { "aria-label": "Deals" },
     filters,
-    h("p", { class: "count" }, `${deals.length} deal${deals.length === 1 ? "" : "s"} near ${p.label}`),
+    h(
+      "p",
+      { class: "count" },
+      `${deals.length} deal${deals.length === 1 ? "" : "s"} near ${p.label} · prices shown are all-in (tax, plus tip when dining in)`,
+    ),
     dealList(),
   );
 }
@@ -366,6 +393,7 @@ function compareView() {
   const ds = state.data;
   if (!p || !ds) return h("p", {}, "Loading…");
   const region = p.region;
+  const tax = taxFor(region, p.city);
   const channels = ["pickup", "first_party_site", ...region.platforms];
   // Rows are remembered across places; snap any channel that doesn't operate here to a local one.
   for (const r of compareRows) if (!channels.includes(r.channel)) r.channel = region.platforms[0] ?? "first_party_site";
@@ -393,7 +421,7 @@ function compareView() {
       out.append(h("p", { class: "muted" }, "Enter the menu subtotal you see on each option."));
       return;
     }
-    const res = compareChannels(quotes, region.currency, region.tax);
+    const res = compareChannels(quotes, region.currency, tax);
     const m = (n: number) => formatMoney(n, region.currency);
     appendAll(
       out,
@@ -411,7 +439,12 @@ function compareView() {
           h(
             "li",
             { class: i === 0 ? "best" : "" },
-            h("div", { class: "rank-top" }, h("strong", {}, r.channel), h("span", { class: "total" }, m(r.total))),
+            h(
+              "div",
+              { class: "rank-top" },
+              h("strong", {}, r.channel),
+              h("span", { class: "total" }, m(r.total), h("small", {}, " all-in")),
+            ),
             h(
               "small",
               {},
@@ -423,8 +456,8 @@ function compareView() {
       h(
         "p",
         { class: "muted small" },
-        region.tax
-          ? `Tax: ${region.tax.rate_bps / 100}%${region.tax.included_in_menu_price ? " (already in menu prices)" : ""}. `
+        tax
+          ? `Tax: ${tax.rate_bps / 100}%${tax.included_in_menu_price ? " (already in menu prices)" : ""}${tax.note ? ` (${tax.note})` : ""}. `
           : "Tax for this area isn't in our data yet, so totals exclude tax. ",
         region.tipping.customary
           ? `Delivery tip assumed at ${region.tipping.default_percent}%. Estimates only.`
@@ -513,7 +546,11 @@ function compareView() {
   const section = h(
     "section",
     { "aria-label": "Compare" },
-    h("p", { class: "lead" }, "Same order, different apps. Type in what each one shows and see the real total."),
+    h(
+      "p",
+      { class: "lead" },
+      "Same order, different apps. Type in the menu prices and fees each one shows, and see what you'll really pay: food + delivery + service fees + tax + tip, all in.",
+    ),
     ...compareRows.map(rowEl),
     compareRows.length < 6
       ? h(

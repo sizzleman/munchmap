@@ -91,6 +91,8 @@ export type Deal = z.infer<typeof Deal>;
 export const SourcedRate = z.object({
   rate_bps: z.number().int().min(0).max(5000),
   included_in_menu_price: z.boolean(),
+  /** Whether delivery/service fees are taxed too. Rules vary; default true gives a conservative (higher) estimate. */
+  fees_taxable: z.boolean().default(true),
   note: z.string().nullable().optional(),
   source_url: z.url(),
   verified_at: IsoDate,
@@ -106,7 +108,16 @@ export const Region = z.object({
   tax: SourcedRate.nullable(),
   tipping: z.object({ customary: z.boolean(), default_percent: z.number().min(0).max(30) }),
   platforms: z.array(Channel),
-  cities: z.array(z.object({ slug, name: z.string(), lat: z.number(), lon: z.number() })),
+  cities: z.array(
+    z.object({
+      slug,
+      name: z.string(),
+      lat: z.number(),
+      lon: z.number(),
+      /** City-level rate on prepared food when it differs from the region's (common in the US). */
+      tax: SourcedRate.nullable().optional(),
+    }),
+  ),
   campuses: z.array(
     z.object({
       slug,
@@ -118,6 +129,7 @@ export const Region = z.object({
   ),
 });
 export type Region = z.infer<typeof Region>;
+export type SourcedRate = z.infer<typeof SourcedRate>;
 
 export const Membership = z.object({
   id: slug,

@@ -20,6 +20,11 @@ for (const d of deals) {
 // Source links must be clean public URLs: no email tracking / personal query params.
 const urls = [
   ...deals.map((d) => [d.id, d.source_url] as const),
+  ...regions.flatMap((r) =>
+    [r.tax, ...r.cities.map((c) => c.tax)].flatMap((t) =>
+      t ? [[`${r.country}/${r.region} tax`, t.source_url] as const] : [],
+    ),
+  ),
   ...platforms.flatMap((p) => [
     [p.id, p.source_url] as const,
     ...p.memberships.map((m) => [`${p.id}/${m.id}`, m.source_url] as const),

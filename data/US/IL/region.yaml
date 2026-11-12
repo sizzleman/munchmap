@@ -3,10 +3,19 @@ region: IL
 name: Illinois
 currency: USD
 timezone: America/Chicago
-tax: null # TODO: US restaurant tax varies by city/county; add with source_url (good first issue)
+tax: null # set per city below (US rates vary by city)
 tipping: { customary: true, default_percent: 15 }
 platforms: [doordash, ubereats, grubhub]
 cities:
-  - { slug: champaign, name: "Champaign-Urbana", lat: 40.1164, lon: -88.2434 }
+  - slug: champaign
+    name: "Champaign-Urbana"
+    lat: 40.1164
+    lon: -88.2434
+    tax:
+      rate_bps: 975
+      included_in_menu_price: false
+      note: "9.25% combined sales tax (6.25% state + 1.25% county + 1.75% city, 2026) + 0.5% City of Champaign food & beverage tax. Urbana side of campus is higher (2% city food & beverage tax). Verify at mytax.illinois.gov."
+      source_url: https://www.avalara.com/us/en/taxrates/state-rates/illinois/cities/champaign.html
+      verified_at: 2026-11-12
 campuses:
   - { slug: uiuc, name: "University of Illinois Urbana-Champaign", city: champaign, lat: 40.1020, lon: -88.2272 }

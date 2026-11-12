@@ -1,3 +1,4 @@
+export * from "./allin.ts";
 export * from "./dataset.ts";
 export * from "./deals.ts";
 export * from "./geo.ts";

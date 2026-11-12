@@ -12,12 +12,14 @@ import {
   compareChannels,
   type Dataset,
   DealType,
+  dealAllIn,
   findDeals,
   findRestaurants,
   formatMoney,
   OSM_ATTRIBUTION,
   type Profile,
   prepareSubmission,
+  taxFor,
   Weekday,
 } from "@munchmap/core";
 import { z } from "zod";
@@ -115,11 +117,23 @@ export function createServer(ctx: ServerContext): McpServer {
         maxPriceMinor: args.max_price_minor,
         limit: args.limit,
       });
+      // Resolve the place so all-in prices use the right local tax.
+      let placeRegion = regions.find((r) => r.country === args.country && r.region === args.region);
+      let placeCity = args.city;
+      if (campus)
+        for (const r of regions) {
+          const c = r.campuses.find((x) => x.slug === campus);
+          if (c) {
+            placeRegion = r;
+            placeCity = c.city;
+          }
+        }
       return json({
         campus: campus ?? null,
         count: results.length,
         deals: results.map((d) => ({
           ...d,
+          all_in: placeRegion ? dealAllIn(d, placeRegion, placeCity) : null,
           display_value:
             d.value && "amount_minor" in d.value
               ? formatMoney(d.value.amount_minor, d.value.currency)
@@ -128,7 +142,7 @@ export function createServer(ctx: ServerContext): McpServer {
                 : null,
         })),
         note: results.length
-          ? "Deals are community-sourced; confirm at the source before ordering."
+          ? "Lead with all_in.total_minor (tax, plus tip when dining in) rather than the menu price; mention anything in all_in.excludes. Deals are community-sourced; confirm at the source before ordering."
           : `No deals found. Users can add one with prepare_deal_submission or at ${SOURCE_URL}/issues/new/choose`,
       });
     },
@@ -196,10 +210,12 @@ export function createServer(ctx: ServerContext): McpServer {
       description:
         "Given what the user sees for the same order on different channels (pickup, each delivery app, the " +
         "restaurant's own site), compute the true total incl. fees, tax and tip and rank them. Amounts are integer " +
-        "minor units (cents/fils). If tip_bps is omitted for delivery channels, the region's customary tip is used.",
+        "minor units (cents/fils). If tip_bps is omitted for delivery channels, the region's customary tip is used. " +
+        "Always present the all-in total (food + fees + tax + tip), never just the menu price.",
       inputSchema: {
         country: z.string().length(2),
         region: z.string(),
+        city: z.string().optional().describe("City slug for the local tax rate, e.g. claremont (see list_coverage)"),
         quotes: z.array(QuoteSchema).min(1).max(10),
         memberships: z
           .array(z.string())
@@ -208,7 +224,7 @@ export function createServer(ctx: ServerContext): McpServer {
       },
       annotations: { readOnlyHint: true },
     },
-    async ({ country, region, quotes, memberships }) => {
+    async ({ country, region, city, quotes, memberships }) => {
       const { regions, platforms } = await ctx.getDataset();
       const r = regions.find((x) => x.country === country && x.region === region);
       if (!r) return fail(`Unknown region ${country}/${region}. Call list_coverage.`);
@@ -219,11 +235,14 @@ export function createServer(ctx: ServerContext): McpServer {
           q.tip_bps ??
           (q.channel === "pickup" || q.channel === "dine_in" ? 0 : Math.round(r.tipping.default_percent * 100)),
       }));
-      const result = compareChannels(withTips, r.currency, r.tax);
+      const tax = taxFor(r, city);
+      const result = compareChannels(withTips, r.currency, tax);
       return json({
         ...result,
         ranked: result.ranked.map((p) => ({ ...p, total_display: formatMoney(p.total, r.currency) })),
-        tax_note: r.tax ? (r.tax.note ?? null) : "Tax rate for this region is not in our data yet; totals exclude tax.",
+        tax_note: tax
+          ? `${tax.rate_bps / 100}% tax${tax.included_in_menu_price ? " (already in menu prices)" : ""}. ${tax.note ?? ""}`.trim()
+          : "Tax rate for this place is not in our data yet; totals exclude tax.",
         your_memberships: platforms
           .filter((p) => p.country === country)
           .flatMap((p) => p.memberships.map((m) => ({ platform: p.platform, ...m })))

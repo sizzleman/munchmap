@@ -366,3 +366,14 @@ footer {
     grid-template-columns: 1fr;
   }
 }
+.value small,
+.total small {
+  font-weight: 500;
+  font-size: 0.72em;
+  opacity: 0.8;
+}
+.breakdown {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: -4px 0 8px;
+}

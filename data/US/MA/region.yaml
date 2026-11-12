@@ -3,10 +3,19 @@ region: MA
 name: Massachusetts
 currency: USD
 timezone: America/New_York
-tax: null # TODO: US restaurant tax varies by city/county; add with source_url (good first issue)
+tax: null # set per city below (US rates vary by city)
 tipping: { customary: true, default_percent: 15 }
 platforms: [doordash, ubereats, grubhub]
 cities:
-  - { slug: amherst, name: "Amherst", lat: 42.3732, lon: -72.5199 }
+  - slug: amherst
+    name: "Amherst"
+    lat: 42.3732
+    lon: -72.5199
+    tax:
+      rate_bps: 700
+      included_in_menu_price: false
+      note: "6.25% Massachusetts meals tax + 0.75% local option meals excise adopted by Amherst."
+      source_url: https://www.mass.gov/guides/sales-tax-on-meals
+      verified_at: 2026-11-12
 campuses:
   - { slug: umass, name: "University of Massachusetts Amherst", city: amherst, lat: 42.3868, lon: -72.5301 }

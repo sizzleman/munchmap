@@ -3,11 +3,13 @@ import { describe, expect, it } from "vitest";
 import {
   cleanUrl,
   compareChannels,
+  dealAllIn,
   effectivePrice,
   findDeals,
   isScheduleActive,
   looksPersonalCode,
   scrubText,
+  taxFor,
 } from "./index.ts";
 import { loadDataDir } from "./node.ts";
 
@@ -120,5 +122,58 @@ describe("privacy", () => {
 describe("privacy regressions", () => {
   it("strips Salesforce Marketing Cloud (sfmc_) email tracking params", () => {
     expect(cleanUrl("https://brand.example/terms?sfmc_id=1&sfmc_journey_id=abc")).toBe("https://brand.example/terms");
+  });
+});
+
+describe("all-in prices", () => {
+  const region = fixtures.regions[0];
+  if (!region) throw new Error("fixture region missing");
+  const withCityTax = {
+    ...region,
+    cities: region.cities.map((c) => ({
+      ...c,
+      tax: {
+        rate_bps: 1000,
+        included_in_menu_price: false,
+        fees_taxable: true,
+        source_url: "https://example.com/tax",
+        verified_at: "2026-11-12",
+      },
+    })),
+  };
+  const pizza = fixtures.deals.find((d) => d.id === "us-il-champaign-example-pizza-tuesday");
+  if (!pizza) throw new Error("fixture deal missing");
+
+  it("city tax overrides region tax", () => {
+    expect(taxFor(withCityTax, "champaign")?.rate_bps).toBe(1000);
+    expect(taxFor(region, "champaign")).toBeNull();
+  });
+  it("pickup deal = menu + tax, no tip", () => {
+    const a = dealAllIn(pizza, withCityTax, "champaign");
+    expect(a).toMatchObject({ basis: "pickup", menu_minor: 799, tax_minor: 80, tip_minor: 0, total_minor: 879 });
+    expect(a?.excludes).toEqual([]);
+  });
+  it("dine-in-only deal adds the customary tip", () => {
+    const a = dealAllIn({ ...pizza, channels: ["dine_in"] }, withCityTax, "champaign");
+    expect(a).toMatchObject({ basis: "dine_in", tax_minor: 80, tip_minor: 120, total_minor: 999 });
+  });
+  it("delivery-only deal says fees are not included", () => {
+    const a = dealAllIn({ ...pizza, channels: ["doordash"] }, withCityTax, "champaign");
+    expect(a?.basis).toBe("delivery");
+    expect(a?.excludes[0]).toMatch(/fees/);
+  });
+  it("unknown tax is flagged, percent deals have no all-in price", () => {
+    expect(dealAllIn(pizza, region, "champaign")?.tax_unknown).toBe(true);
+    const student = fixtures.deals.find((d) => d.type === "percent_off");
+    expect(student && dealAllIn(student, region)).toBeNull();
+  });
+  it("fees aren't taxed where fees_taxable is false", () => {
+    const p = effectivePrice({ channel: "x", subtotal_minor: 1000, delivery_fee_minor: 500 }, "USD", {
+      rate_bps: 1000,
+      included_in_menu_price: false,
+      fees_taxable: false,
+    });
+    expect(p.tax).toBe(100);
+    expect(p.total).toBe(1600);
   });
 });
