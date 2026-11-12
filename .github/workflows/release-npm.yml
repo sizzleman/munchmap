@@ -1,0 +1,31 @@
+name: Release munchmap-mcp to npm
+# Trusted publishing (OIDC): no npm tokens stored anywhere. npm verifies this exact workflow
+# in this repo, and attaches a public provenance statement linking the package to the commit.
+# Release: bump "version" in packages/mcp-server/package.json, commit, then
+#   git tag mcp-v0.2.1 && git push origin mcp-v0.2.1
+on:
+  push:
+    tags: ["mcp-v*"]
+  workflow_dispatch:
+permissions:
+  contents: read
+  id-token: write # required for npm trusted publishing + provenance
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    environment: npm
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with: { node-version-file: .nvmrc, cache: npm, registry-url: "https://registry.npmjs.org" }
+      - run: npm install -g npm@latest # trusted publishing needs npm >= 11.5
+      - run: npm ci
+      - run: npm run lint && npm run typecheck && npm test && npm run validate:data
+      - run: npm run build:mcp
+      - name: Check tag matches package version
+        if: startsWith(github.ref, 'refs/tags/')
+        run: |
+          V=$(node -p 'require("./dist/munchmap-mcp/package.json").version')
+          [ "mcp-v$V" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} ≠ version $V"; exit 1; }
+      - run: npm publish --access public --provenance
+        working-directory: dist/munchmap-mcp

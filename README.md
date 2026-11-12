@@ -24,7 +24,7 @@ There are three ways in. Pick whichever is easiest.
 |---|---|---|
 | 🌐 **Web app** | Anyone on a phone or laptop | **[sizzleman.github.io/munchmap](https://sizzleman.github.io/munchmap/)**: pick your campus. You can install it to your home screen. |
 | 🔌 **Hosted AI connector** | ChatGPT, Claude web/mobile, Grok, Meta Muse | Add the URL **`https://munchmap-mcp.munchmap.workers.dev/mcp`** as a connector. See [apps/worker](apps/worker/README.md). |
-| 💻 **Local AI connector** | Claude Desktop/Code, Gemini CLI, Cursor, Antigravity | `npx munchmap-mcp` (once published) or run it from a clone (below) |
+| 💻 **Local AI connector** | Claude Desktop/Code, Gemini CLI, Cursor, Antigravity | `npx -y munchmap-mcp` ([npm](https://www.npmjs.com/package/munchmap-mcp)), or run it from a clone (below) |
 
 ### Run from a clone (Node.js 20+)
 ```bash
@@ -37,17 +37,17 @@ npm run serve:mcp    # remote-style MCP endpoint at http://localhost:8787/mcp
 ```
 
 ### Connect a local AI app
-**Claude Code:** `claude mcp add munchmap -- npx tsx /ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts`
+**Claude Code:** `claude mcp add munchmap -- npx -y munchmap-mcp`
 
 **Claude Desktop:** Settings → Developer → Edit Config:
 ```json
 {
   "mcpServers": {
-    "munchmap": { "command": "npx", "args": ["tsx", "/ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts"] }
+    "munchmap": { "command": "npx", "args": ["-y", "munchmap-mcp"] }
   }
 }
 ```
-Once `munchmap-mcp` is on npm, the config becomes `"command": "npx", "args": ["-y", "munchmap-mcp"]`.
+Working on munchmap itself? Point it at your clone instead: `"args": ["tsx", "/ABSOLUTE/PATH/TO/munchmap/packages/mcp-server/src/index.ts"]`.
 
 **Gemini CLI / Cursor / Antigravity / others:** add the same `command` + `args` as a stdio MCP server.
 

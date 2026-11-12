@@ -65,7 +65,7 @@ Total running cost to the project: **$0**. Users bring their own AI. See `docs/P
 - [x] US prepared-food tax for all 5 US cities (city-level: Champaign 9.75%, Amherst 7%, Austin 8.25%, Santa Cruz 9.75%, Claremont 10.25%)
 - [x] **All-in pricing everywhere:** deal cards, Compare and MCP results lead with the out-the-door price (food + fees + tax + tip) and show a receipt-style breakdown
 - [x] `apps/web`: static PWA with Deals, Compare (real-price calculator + memberships), Nearby (OSM) and Share a deal (scrubbed → prefilled issue)
-- [x] `npm run build:mcp` produces a self-contained `munchmap-mcp` package. **To do:** publish it (needs your npm account)
+- [x] `munchmap-mcp` published to npm (v0.2.0); future releases go through GitHub Actions trusted publishing (tag `mcp-vX.Y.Z`)
 - [x] Deal bot: issues with a YAML block (from the web app or MCP) become PRs automatically; plain forms get labeled `needs-triage`
 - [ ] **Go public:** run gitleaks over the history, enable branch protection, Dependabot, secret scanning, private vulnerability reporting and Discussions, install the DCO app, and seed 10 good first issues
 
@@ -76,7 +76,7 @@ Total running cost to the project: **$0**. Users bring their own AI. See `docs/P
 - [ ] Screenshot/link upload with local extraction (web) and the same scrub-and-review flow
 - [ ] Telegram bot (self-hostable; BYO AI key or local Ollama)
 - [ ] Community verification: "still valid?" votes; deals with many 👎 get re-checked
-- [x] Remote MCP endpoint (stateless HTTP; Cloudflare Worker or Node). **To do:** deploy it (needs your free Cloudflare account) and submit it to the Meta Muse connector catalog
+- [x] Remote MCP endpoint live at `https://munchmap-mcp.munchmap.workers.dev/mcp`. **To do:** submit it to the Meta Muse connector catalog
 - [ ] Optional anonymous submission Worker for people without GitHub accounts
 
 ### Phase 3: Live prices, notifications, ordering hand-off
