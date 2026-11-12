@@ -12,88 +12,36 @@ import {
   type DealQuery,
   dealAllIn,
   findDeals,
-  findRestaurants,
   formatMoney,
   isScheduleActive,
-  OSM_ATTRIBUTION,
   parseDataset,
   prepareSubmission,
-  type Region,
-  type Restaurant,
   taxFor,
   type Weekday,
 } from "@munchmap/core";
+import type { AppCtx, Area, PlaceTarget, Tab } from "./ctx.ts";
+import { appendAll, extLink, h, store, toMinor } from "./dom.ts";
+import { mapView } from "./mapview.ts";
+import { meView } from "./me.ts";
+import { placeForms } from "./share-place.ts";
 import "./style.css";
 
 const REPO_URL = "https://github.com/sizzleman/munchmap";
-type Tab = "deals" | "compare" | "nearby" | "share";
-
-// ---------- tiny DOM helper (safe: text via textContent) ----------
-type Child = Node | string | number | null | undefined | false;
-type Attrs = Record<string, string | number | boolean | EventListener | undefined>;
-function h<K extends keyof HTMLElementTagNameMap>(tag: K, attrs: Attrs = {}, ...children: Child[]) {
-  const el = document.createElement(tag);
-  for (const [k, v] of Object.entries(attrs)) {
-    if (v === undefined || v === false) continue;
-    if (k.startsWith("on") && typeof v === "function") el.addEventListener(k.slice(2), v);
-    else if (v === true) el.setAttribute(k, "");
-    else el.setAttribute(k, String(v));
-  }
-  for (const c of children)
-    if (c !== null && c !== undefined && c !== false) el.append(typeof c === "number" ? String(c) : c);
-  return el;
-}
-const appendAll = (el: HTMLElement, ...children: Child[]) => {
-  for (const c of children)
-    if (c !== null && c !== undefined && c !== false) el.append(typeof c === "number" ? String(c) : c);
-};
-const safeHref = (url: string) => (/^https?:\/\//i.test(url) ? url : "#");
-const extLink = (href: string, text: string) =>
-  h("a", { href: safeHref(href), target: "_blank", rel: "noopener noreferrer" }, text);
-
-// ---------- local preferences (best effort; app works without storage) ----------
-const store = {
-  get<T>(key: string, fallback: T): T {
-    try {
-      const v = localStorage.getItem(`munchmap:${key}`);
-      return v === null ? fallback : (JSON.parse(v) as T);
-    } catch {
-      return fallback;
-    }
-  },
-  set(key: string, value: unknown) {
-    try {
-      localStorage.setItem(`munchmap:${key}`, JSON.stringify(value));
-    } catch {
-      /* private mode etc. */
-    }
-  },
-};
 
 // ---------- state ----------
-interface Place {
-  key: string; // "campus:uiuc" | "city:AE/DU/dubai"
-  label: string;
-  group: string;
-  region: Region;
-  campus?: string;
-  city: string;
-  lat: number;
-  lon: number;
-}
+type Place = Area;
 
 const state = {
   data: null as Dataset | null,
   places: [] as Place[],
   placeKey: store.get<string>("place", ""),
-  tab: store.get<Tab>("tab", "deals"),
+  tab: store.get<Tab>("tab", "map"),
   query: "",
   mode: store.get<"any" | "pickup" | "delivery">("mode", "any"),
   studentOnly: false,
   activeNow: false,
-  restaurants: null as Restaurant[] | null,
-  restaurantsError: "",
-  loadingRestaurants: false,
+  shareMode: "deal" as "deal" | "place",
+  shareTarget: null as PlaceTarget | null,
 };
 
 const app = document.getElementById("app") as HTMLElement;
@@ -112,6 +60,7 @@ function buildPlaces(ds: Dataset): Place[] {
         region: r,
         campus: c.slug,
         city: c.city,
+        cityName: r.cities.find((x) => x.slug === c.city)?.name ?? c.city,
         lat: c.lat,
         lon: c.lon,
       });
@@ -123,6 +72,7 @@ function buildPlaces(ds: Dataset): Place[] {
           group,
           region: r,
           city: city.slug,
+          cityName: city.name,
           lat: city.lat,
           lon: city.lon,
         });
@@ -134,8 +84,6 @@ function setState(patch: Partial<typeof state>) {
   Object.assign(state, patch);
   if (patch.placeKey !== undefined) {
     store.set("place", state.placeKey);
-    state.restaurants = null;
-    state.restaurantsError = "";
   }
   if (patch.tab !== undefined) store.set("tab", state.tab);
   if (patch.mode !== undefined) store.set("mode", state.mode);
@@ -219,10 +167,11 @@ function header() {
     g.append(h("option", { value: pl.key, selected: pl.key === p?.key }, pl.label));
   }
   const tabs: [Tab, string][] = [
+    ["map", "Map"],
     ["deals", "Deals"],
     ["compare", "Compare"],
-    ["nearby", "Nearby"],
-    ["share", "Share a deal"],
+    ["share", "Share"],
+    ["me", "Me"],
   ];
   return h(
     "header",
@@ -383,10 +332,6 @@ const compareRows: Row[] = store.get<Row[]>("compare", [
   { channel: "pickup", subtotal: "", delivery: "", service: "", promo: "", member: false },
   { channel: "ubereats", subtotal: "", delivery: "", service: "", promo: "", member: false },
 ]);
-const toMinor = (s: string) => {
-  const n = Number.parseFloat(s);
-  return Number.isFinite(n) && n > 0 ? Math.round(n * 100) : 0;
-};
 
 function compareView() {
   const p = place();
@@ -607,110 +552,30 @@ function compareView() {
   return section;
 }
 
-// ---------- nearby ----------
-let cuisine = "";
-let radius = 1200;
-async function loadRestaurants(lat: number, lon: number) {
-  setState({ loadingRestaurants: true, restaurantsError: "" });
-  try {
-    const restaurants = await findRestaurants({ lat, lon, radius_m: radius, cuisine: cuisine || undefined, limit: 40 });
-    setState({ restaurants, loadingRestaurants: false });
-  } catch (e) {
-    setState({ restaurantsError: (e as Error).message, loadingRestaurants: false });
-  }
-}
-
-function nearbyView() {
+// ---------- share ----------
+function shareView() {
   const p = place();
-  if (!p) return h("p", {}, "Loading…");
-  const radiusSel = h("select", {
-    "aria-label": "Radius",
-    onchange: (e: Event) => {
-      radius = Number((e.target as HTMLSelectElement).value);
-    },
-  });
-  for (const r of [500, 1200, 2000, 3000])
-    radiusSel.append(h("option", { value: r, selected: r === radius }, r < 1000 ? `${r} m` : `${r / 1000} km`));
-
+  const ds = state.data;
+  if (!p || !ds) return h("p", {}, "Loading…");
+  const sub = (mode: "deal" | "place", label: string) =>
+    h(
+      "button",
+      {
+        class: state.shareMode === mode ? "chip on" : "chip",
+        "aria-pressed": state.shareMode === mode ? "true" : "false",
+        onclick: () => setState({ shareMode: mode }),
+      },
+      label,
+    );
   return h(
     "section",
-    { "aria-label": "Nearby restaurants" },
-    h(
-      "div",
-      { class: "filters row" },
-      h("input", {
-        type: "search",
-        placeholder: "Cuisine (pizza, indian, sushi…)",
-        value: cuisine,
-        "aria-label": "Cuisine",
-        oninput: (e: Event) => {
-          cuisine = (e.target as HTMLInputElement).value;
-        },
-      }),
-      radiusSel,
-      h(
-        "button",
-        { class: "btn", onclick: () => loadRestaurants(p.lat, p.lon) },
-        `Search near ${p.label.split(" (")[0]}`,
-      ),
-      h(
-        "button",
-        {
-          class: "btn ghost",
-          title: "Your location is sent only to OpenStreetMap's search server, never to munchmap.",
-          onclick: () =>
-            navigator.geolocation?.getCurrentPosition(
-              (pos) => loadRestaurants(pos.coords.latitude, pos.coords.longitude),
-              () => setState({ restaurantsError: "Couldn't get your location." }),
-            ),
-        },
-        "📍 Near me",
-      ),
-    ),
-    state.loadingRestaurants ? h("p", { class: "muted" }, "Searching OpenStreetMap…") : null,
-    state.restaurantsError ? h("p", { class: "error" }, state.restaurantsError) : null,
-    state.restaurants
-      ? h(
-          "ul",
-          { class: "cards compact" },
-          ...state.restaurants.map((r) =>
-            h(
-              "li",
-              { class: "card" },
-              h(
-                "div",
-                { class: "card-top" },
-                h("strong", {}, r.name),
-                h(
-                  "span",
-                  { class: "muted" },
-                  r.distance_m < 1000 ? `${r.distance_m} m` : `${(r.distance_m / 1000).toFixed(1)} km`,
-                ),
-              ),
-              h(
-                "div",
-                { class: "badges" },
-                h("span", { class: "badge muted" }, r.kind.replace("_", " ")),
-                r.cuisine ? h("span", { class: "badge muted" }, r.cuisine.replaceAll(";", ", ")) : null,
-                r.takeaway === "yes" ? h("span", { class: "badge muted" }, "takeaway") : null,
-              ),
-              r.opening_hours ? h("small", { class: "muted" }, r.opening_hours) : null,
-              h(
-                "div",
-                { class: "card-foot" },
-                extLink(r.maps_url, "Map ↗"),
-                r.website ? extLink(r.website, "Website ↗") : null,
-              ),
-            ),
-          ),
-        )
-      : h("p", { class: "muted" }, "Find restaurants, cafés and fast food around you."),
-    h("p", { class: "attribution" }, OSM_ATTRIBUTION),
+    { "aria-label": "Share" },
+    h("div", { class: "chips sub-nav" }, sub("deal", "🏷️ A deal"), sub("place", "🧾 Menu prices & rating")),
+    state.shareMode === "deal" ? dealShareForm() : placeForms(ctx(), state.shareTarget),
   );
 }
 
-// ---------- share ----------
-function shareView() {
+function dealShareForm() {
   const p = place();
   if (!p) return h("p", {}, "Loading…");
   const result = h("div", { class: "results", "aria-live": "polite" });
@@ -925,14 +790,26 @@ function footer() {
   );
 }
 
+function ctx(): AppCtx {
+  const area = place() as Area;
+  return {
+    data: state.data as NonNullable<typeof state.data>,
+    area,
+    go: (tab, target) => setState(target ? { tab, shareMode: "place", shareTarget: target } : { tab }),
+  };
+}
+
 function render() {
+  if (!state.data || !place()) return;
   const views: Record<Tab, () => HTMLElement> = {
+    map: () => mapView(ctx()),
     deals: dealsView,
     compare: compareView,
-    nearby: nearbyView,
     share: shareView,
+    me: () => meView(ctx()),
   };
   const focusedId = document.activeElement?.id;
+  app.classList.toggle("is-map", state.tab === "map");
   app.replaceChildren(header(), h("main", {}, views[state.tab]()), footer());
   if (focusedId) document.getElementById(focusedId)?.focus();
 }

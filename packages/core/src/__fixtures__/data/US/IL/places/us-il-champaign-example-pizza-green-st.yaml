@@ -1,0 +1,17 @@
+id: us-il-champaign-example-pizza-green-st
+name: Example Pizza
+country: US
+region: IL
+city: champaign
+lat: 40.1101
+lon: -88.2301
+osm: node/111
+menu:
+  - { name: "Cheese slice", price: { amount_minor: 350, currency: USD } }
+  - { name: "Large pizza", price: { amount_minor: 1500, currency: USD } }
+  - { name: "Garlic knots", price: { amount_minor: 600, currency: USD }, diet: [vegetarian] }
+menu_source_url: https://example.com/menu
+menu_verified_at: 2026-11-01
+ratings:
+  - { worth_it: 5, portion: 4, student_friendly: 5, date: 2026-11-01, submitted_by: test }
+  - { worth_it: 4, date: 2026-11-02, submitted_by: test }

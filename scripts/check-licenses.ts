@@ -17,6 +17,19 @@ const nm = join(import.meta.dirname, "..", "node_modules");
 const rows: string[] = [];
 const bad: string[] = [];
 
+function licenseFromFile(pkgDir: string): string | null {
+  for (const f of ["LICENSE", "LICENSE.md", "LICENSE.txt", "license"]) {
+    const file = join(pkgDir, f);
+    if (!existsSync(file)) continue;
+    const t = readFileSync(file, "utf8");
+    if (/Permission is hereby granted, free of charge/.test(t)) return "MIT";
+    if (/Redistribution and use in source and binary forms/.test(t))
+      return /Neither the name/.test(t) ? "BSD-3-Clause" : "BSD-2-Clause";
+    if (/ISC License|Permission to use, copy, modify, and\/or distribute/.test(t)) return "ISC";
+  }
+  return null;
+}
+
 function visit(dir: string) {
   for (const name of readdirSync(dir)) {
     if (name.startsWith(".")) continue;
@@ -29,7 +42,9 @@ function visit(dir: string) {
     if (!existsSync(pj)) continue;
     const pkg = JSON.parse(readFileSync(pj, "utf8"));
     if (pkg.name?.startsWith("@munchmap/")) continue;
-    const lic = typeof pkg.license === "string" ? pkg.license : (pkg.license?.type ?? "UNKNOWN");
+    let lic = typeof pkg.license === "string" ? pkg.license : (pkg.license?.type ?? "UNKNOWN");
+    // Some packages ship only a LICENSE file with no SPDX id; recognize the common permissive texts.
+    if (lic === "UNKNOWN") lic = licenseFromFile(p) ?? lic;
     rows.push(`| ${pkg.name} | ${pkg.version} | ${lic} |`);
     if (!allowed(lic)) bad.push(`${pkg.name}@${pkg.version}: ${lic}`);
   }

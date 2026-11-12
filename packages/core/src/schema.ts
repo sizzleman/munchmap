@@ -170,3 +170,50 @@ export const Profile = z.object({
   prefers: z.enum(["pickup", "delivery", "any"]).default("any"),
 });
 export type Profile = z.infer<typeof Profile>;
+
+/** A menu item with its price as listed (pre-tax in most of North America). */
+export const MenuItem = z.object({
+  name: z.string().min(1).max(120),
+  price: Money,
+  category: z.string().max(60).nullable().optional(),
+  diet: z.array(z.enum(["vegetarian", "vegan", "halal", "gluten_free", "kosher"])).default([]),
+});
+export type MenuItem = z.infer<typeof MenuItem>;
+
+/** A student "worth it?" rating — munchmap's own signal, not copied from any platform. */
+export const Rating = z.object({
+  worth_it: z.number().int().min(1).max(5),
+  portion: z.number().int().min(1).max(5).nullable().optional(),
+  student_friendly: z.number().int().min(1).max(5).nullable().optional(),
+  note: z.string().max(200).nullable().optional(),
+  date: IsoDate,
+  submitted_by: z.string().min(1),
+});
+export type Rating = z.infer<typeof Rating>;
+
+/**
+ * Community data about one restaurant location: menu prices + ratings.
+ * Identity comes from OpenStreetMap (osm ref) when possible, else name + coordinates.
+ * Restaurant facts (hours, cuisine) are NOT copied here — they're read live from OSM.
+ */
+export const Place = z.object({
+  id: slug,
+  name: z.string().min(1),
+  country: z.string().regex(/^[A-Z]{2}$/),
+  region: z.string().regex(/^[A-Z0-9]{1,3}$/),
+  city: slug,
+  lat: z.number().min(-90).max(90),
+  lon: z.number().min(-180).max(180),
+  osm: z
+    .string()
+    .regex(/^(node|way|relation)\/\d+$/)
+    .nullable()
+    .optional(),
+  menu: z.array(MenuItem).default([]),
+  /** Where the prices came from. Photos/receipts have no URL; maintainers review them in the issue. */
+  menu_source: z.enum(["website", "photo", "receipt", "in_person"]).nullable().optional(),
+  menu_source_url: z.url().nullable().optional(),
+  menu_verified_at: IsoDate.nullable().optional(),
+  ratings: z.array(Rating).default([]),
+});
+export type Place = z.infer<typeof Place>;

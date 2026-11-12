@@ -19,7 +19,12 @@ const TTL_MS = 60 * 60 * 1000;
 let lastCall = 0;
 
 export interface Restaurant {
+  /** OSM reference, e.g. "node/123456". Stable enough to key community data on. */
+  id: string;
   name: string;
+  brand: string | null;
+  lat: number;
+  lon: number;
   kind: string;
   cuisine: string | null;
   distance_m: number;
@@ -27,11 +32,15 @@ export interface Restaurant {
   website: string | null;
   takeaway: string | null;
   delivery: string | null;
+  /** Diet options tagged in OSM ("yes"/"only" → true). */
+  diet: { vegetarian: boolean; vegan: boolean; halal: boolean; gluten_free: boolean };
   maps_url: string;
   osm_url: string;
 }
 
 interface OverpassElement {
+  type?: string;
+  id?: number;
   lat?: number;
   lon?: number;
   center?: { lat: number; lon: number };
@@ -58,7 +67,7 @@ export async function findRestaurants(opts: {
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     lastCall = Date.now();
     const cuisineFilter = cuisine ? `["cuisine"~"${cuisine}",i]` : "";
-    const q = `[out:json][timeout:20];nwr(around:${radius},${opts.lat},${opts.lon})["amenity"~"^(restaurant|fast_food|cafe|food_court)$"]${cuisineFilter}["name"];out center 200;`;
+    const q = `[out:json][timeout:${opts.limit > 400 ? 60 : 20}];nwr(around:${radius},${opts.lat},${opts.lon})["amenity"~"^(restaurant|fast_food|cafe|food_court)$"]${cuisineFilter}["name"];out center ${Math.min(5000, Math.max(400, opts.limit))};`;
     // Public instances are often overloaded (429/5xx); fall through to the next mirror.
     let res: Response | null = null;
     let lastError = "";
@@ -72,7 +81,7 @@ export async function findRestaurants(opts: {
             ...(typeof window === "undefined" ? { "User-Agent": USER_AGENT } : {}),
           },
           body: `data=${encodeURIComponent(q)}`,
-          signal: AbortSignal.timeout(12_000),
+          signal: AbortSignal.timeout(opts.limit > 400 ? 90_000 : 12_000),
         });
         if (res.ok) break;
         lastError = `HTTP ${res.status}`;
@@ -91,7 +100,11 @@ export async function findRestaurants(opts: {
       if (lat === undefined || lon === undefined || !t.name) return [];
       return [
         {
+          id: `${el.type ?? "node"}/${el.id ?? 0}`,
           name: t.name,
+          brand: t.brand ?? null,
+          lat,
+          lon,
           kind: t.amenity ?? "restaurant",
           cuisine: t.cuisine ?? null,
           distance_m: Math.round(haversineMeters({ lat: opts.lat, lon: opts.lon }, { lat, lon })),
@@ -99,6 +112,12 @@ export async function findRestaurants(opts: {
           website: t.website ?? t["contact:website"] ?? null,
           takeaway: t.takeaway ?? null,
           delivery: t.delivery ?? null,
+          diet: {
+            vegetarian: /^(yes|only)$/.test(t["diet:vegetarian"] ?? "") || /^(yes|only)$/.test(t["diet:vegan"] ?? ""),
+            vegan: /^(yes|only)$/.test(t["diet:vegan"] ?? ""),
+            halal: /^(yes|only)$/.test(t["diet:halal"] ?? ""),
+            gluten_free: /^(yes|only)$/.test(t["diet:gluten_free"] ?? ""),
+          },
           maps_url: mapsSearchUrl(`${t.name} ${lat},${lon}`),
           osm_url: osmUrl(lat, lon),
         },

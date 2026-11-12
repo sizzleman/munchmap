@@ -12,6 +12,8 @@ Run `npm run licenses:check -- --table` to print the full list of transitive dep
 | Source | Used for | License | How we credit / comply |
 |---|---|---|---|
 | [OpenStreetMap](https://www.openstreetmap.org/copyright) via the [Overpass API](https://wiki.openstreetmap.org/wiki/Overpass_API) | Restaurant names, locations, cuisine, hours, websites | [ODbL 1.0](https://opendatacommons.org/licenses/odbl/) | Every response that includes OSM data shows "© OpenStreetMap contributors". Queries run live and are cached briefly; OSM data is **not** copied into `data/`. We follow the Overpass usage policy: rate-limited, cached, and identified with a generic User-Agent. We fall back across the public instances run by [FOSSGIS (overpass-api.de)](https://overpass-api.de), [private.coffee](https://overpass.private.coffee) and [Kumi Systems](https://overpass.kumi.systems). |
+| [OpenFreeMap](https://openfreemap.org) map tiles ([OpenMapTiles](https://openmaptiles.org) schema) | Basemap in the web app | Free service; tiles built from OSM (ODbL) | Map shows "OpenFreeMap © OpenMapTiles, Data from OpenStreetMap". |
+| OpenStreetMap snapshots (`public/osm/`) | Pre-built restaurant pins per campus | ODbL 1.0 | Kept separate from `data/`, with its own `LICENSE.md` and attribution. |
 | munchmap community registry (`data/`) | Deals, campuses, regions, platform memberships | [CC BY-SA 4.0](data/LICENSE) | Contributors are credited through git history. Each deal links back to its original public `source_url`. |
 | Public web pages cited in `source_url` fields | Facts about deals (prices, days, conditions) | Owned by their publishers | We record **facts** in our own words and link to the source. We don't copy marketing copy, logos or images. |
 
@@ -22,6 +24,9 @@ Run `npm run licenses:check -- --table` to print the full list of transitive dep
 | [@modelcontextprotocol/sdk](https://github.com/modelcontextprotocol/typescript-sdk) | MIT | Model Context Protocol TypeScript SDK |
 | [zod](https://github.com/colinhacks/zod) | MIT | Schema validation |
 | [yaml](https://github.com/eemeli/yaml) | ISC | YAML parser |
+| [opening_hours.js](https://github.com/opening-hours/opening_hours.js) | LGPL-3.0-only | Parses OSM `opening_hours` for "open now" |
+| [suncalc](https://github.com/mourner/suncalc) | BSD-2-Clause | Sunrise/sunset times (used by opening_hours.js) |
+| [MapLibre GL JS](https://github.com/maplibre/maplibre-gl-js) | BSD-3-Clause | Interactive map in the web app |
 
 The published `munchmap-mcp` npm bundle and the web app include these runtime dependencies. Their license notices ship alongside (`*.LEGAL.txt`) or are kept in the bundled code.
 

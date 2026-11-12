@@ -25,7 +25,8 @@
     "serve:mcp": "tsx packages/mcp-server/src/serve.ts",
     "build:mcp": "tsx scripts/build-mcp.ts",
     "dev:web": "npm run build:data && npm run dev -w @munchmap/web",
-    "build:web": "npm run build:data && npm run build -w @munchmap/web"
+    "build:web": "npm run build:data && npm run build -w @munchmap/web",
+    "snapshot:osm": "tsx scripts/snapshot-osm.ts"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.6.7",

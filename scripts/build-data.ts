@@ -16,4 +16,4 @@ const bundle = {
   ...dataset,
 };
 writeFileSync(join(root, "public", "data.json"), JSON.stringify(bundle));
-console.log(`Wrote public/data.json (${dataset.deals.length} deals)`);
+console.log(`Wrote public/data.json (${dataset.deals.length} deals, ${dataset.places.length} places)`);

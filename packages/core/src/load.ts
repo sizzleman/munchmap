@@ -2,7 +2,7 @@ import { readdirSync, readFileSync, statSync } from "node:fs";
 import { basename, join, relative, sep } from "node:path";
 import { parse } from "yaml";
 import type { Dataset } from "./dataset.ts";
-import { Deal, Platform, Region } from "./schema.ts";
+import { Deal, Place, Platform, Region } from "./schema.ts";
 
 export type { Dataset };
 
@@ -30,7 +30,7 @@ function walk(dir: string): string[] {
  * Layout: data/<CC>/<REGION|_national>/{region.yaml, deals/*.yaml, platforms/*.yaml}
  */
 export function loadDataDir(dataDir: string): LoadResult {
-  const result: LoadResult = { deals: [], regions: [], platforms: [], issues: [] };
+  const result: LoadResult = { deals: [], regions: [], platforms: [], places: [], issues: [] };
   const seen = new Set<string>();
 
   for (const file of walk(dataDir)) {
@@ -81,8 +81,18 @@ export function loadDataDir(dataDir: string): LoadResult {
       if (r.data.id !== fileId) issue(`id "${r.data.id}" must equal file name "${fileId}"`);
       if (r.data.country !== cc) issue(`country ${r.data.country} must match folder ${cc}`);
       result.platforms.push(r.data);
+    } else if (kind === "places") {
+      const r = Place.safeParse(raw);
+      if (!r.success) {
+        issue(r.error.issues.map((i) => `${i.path.join(".")}: ${i.message}`).join("; "));
+        continue;
+      }
+      if (r.data.id !== fileId) issue(`id "${r.data.id}" must equal file name "${fileId}"`);
+      if (r.data.country !== cc || r.data.region !== regionDir)
+        issue(`place must live in folder ${r.data.country}/${r.data.region}`);
+      result.places.push(r.data);
     } else {
-      issue("unexpected file location (expected region.yaml, deals/*.yaml or platforms/*.yaml)");
+      issue("unexpected file location (expected region.yaml, deals/*.yaml, platforms/*.yaml or places/*.yaml)");
     }
   }
 
