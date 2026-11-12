@@ -13,12 +13,23 @@ import {
   type Dataset,
   DealType,
   dealAllIn,
+  dealsForRestaurant,
   findDeals,
   findRestaurants,
   formatMoney,
+  haversineMeters,
+  isOpenNow,
+  menuPriceSummary,
+  namesMatch,
   OSM_ATTRIBUTION,
   type Profile,
+  placeForRestaurant,
+  placeLinks,
+  preparePlaceSubmission,
   prepareSubmission,
+  type Region,
+  type Restaurant,
+  ratingSummary,
   taxFor,
   Weekday,
 } from "@munchmap/core";
@@ -43,6 +54,72 @@ export interface ServerContext {
 
 const json = (data: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(data, null, 2) }] });
 const fail = (message: string) => ({ content: [{ type: "text" as const, text: message }], isError: true });
+
+/** Which region/city a point belongs to: a campus slug, or the nearest known city within 60 km. */
+function resolveArea(ds: Dataset, campus: string | null | undefined, lat?: number, lon?: number) {
+  for (const r of ds.regions) {
+    const c = campus ? r.campuses.find((x) => x.slug === campus) : undefined;
+    if (c)
+      return {
+        region: r,
+        city: c.city,
+        cityName: r.cities.find((x) => x.slug === c.city)?.name ?? c.city,
+        lat: c.lat,
+        lon: c.lon,
+      };
+  }
+  if (lat === undefined || lon === undefined) return null;
+  let best: { region: Region; city: string; cityName: string; d: number } | null = null;
+  for (const r of ds.regions)
+    for (const c of r.cities) {
+      const d = haversineMeters({ lat, lon }, c);
+      if (!best || d < best.d) best = { region: r, city: c.slug, cityName: c.name, d };
+    }
+  return best && best.d < 60_000 ? { ...best, lat, lon } : null;
+}
+
+/** A restaurant plus everything munchmap knows about it, prices always all-in. */
+function enrich(ds: Dataset, r: Restaurant, area: NonNullable<ReturnType<typeof resolveArea>>) {
+  const ctxPlace = { country: area.region.country, region: area.region.region, city: area.city };
+  const deals = dealsForRestaurant(r, ds.deals, ctxPlace);
+  const place = placeForRestaurant(r, ds.places);
+  const menu = place ? menuPriceSummary(place, area.region) : null;
+  const money = (n: number) => formatMoney(n, area.region.currency);
+  return {
+    name: r.name,
+    cuisine: r.cuisine,
+    distance_m: r.distance_m,
+    open_now: isOpenNow(r.opening_hours, area.region.timezone),
+    opening_hours: r.opening_hours,
+    diet: r.diet,
+    takeaway: r.takeaway,
+    delivery: r.delivery,
+    deals: deals.map((d) => {
+      const a = dealAllIn(d, area.region, area.city);
+      return {
+        title: d.title,
+        all_in: a ? `${money(a.total_minor)}${a.excludes.length ? ` (+ ${a.excludes.join(", ")})` : ""}` : null,
+        conditions: d.conditions,
+        source_url: d.source_url,
+        verified_at: d.verified_at,
+      };
+    }),
+    prices_all_in: menu
+      ? {
+          from: money(menu.min_all_in),
+          typical: money(menu.median_all_in),
+          items: menu.items,
+          updated: place?.menu_verified_at ?? null,
+        }
+      : null,
+    student_rating: ratingSummary(place),
+    links: [
+      ...placeLinks(r, area.cityName, area.region.platforms),
+      ...(r.website ? [{ label: "Website", url: r.website }] : []),
+    ],
+    osm: r.id,
+  };
+}
 
 const INSTRUCTIONS = `munchmap finds cheap food for students: verified community deals, nearby restaurants (OpenStreetMap), and the real price of an order across pickup and delivery apps.
 - Start with list_coverage if you don't know the user's campus.
@@ -184,7 +261,14 @@ export function createServer(ctx: ServerContext): McpServer {
           limit: args.limit,
           endpoint: ctx.overpassUrl,
         });
-        return json({ attribution: OSM_ATTRIBUTION, count: restaurants.length, restaurants });
+        const ds = await ctx.getDataset();
+        const area = resolveArea(ds, campusSlug, lat, lon);
+        return json({
+          attribution: OSM_ATTRIBUTION,
+          count: restaurants.length,
+          restaurants: area ? restaurants.map((r) => enrich(ds, r, area)) : restaurants,
+          note: "Prices are all-in (tax incl., pickup). Use place_details for one restaurant, or the review_sweep prompt for reviews across platforms.",
+        });
       } catch (e) {
         return fail((e as Error).message);
       }
@@ -350,6 +434,159 @@ export function createServer(ctx: ServerContext): McpServer {
               "3. Split results into (a) PERSONAL offers (single-use codes, 'just for you', account-specific) — show me these only, do not submit them, and (b) PUBLIC offers anyone can use.",
               "4. For public offers, call prepare_deal_submission and show me the issue link — I'll decide whether to submit.",
               "5. Then call find_deals for my campus and tell me the best options right now, combining my personal offers with public deals.",
+            ].join("\n"),
+          },
+        },
+      ],
+    }),
+  );
+
+  server.registerTool(
+    "place_details",
+    {
+      title: "Everything about one restaurant",
+      description:
+        "Look up one restaurant near a campus or point: munchmap deals (all-in prices), community menu prices " +
+        "(all-in), student 'worth it' ratings, open-now, diet info, and links to Google Maps, Yelp, Beli, Reddit and delivery apps. " +
+        "For reviews from other platforms, use the review_sweep prompt (your own web search), never invent them.",
+      inputSchema: {
+        name: z.string().min(2),
+        campus: z.string().optional(),
+        lat: z.number().min(-90).max(90).optional(),
+        lon: z.number().min(-180).max(180).optional(),
+      },
+      annotations: { readOnlyHint: true, openWorldHint: true },
+    },
+    async (args) => {
+      const ds = await ctx.getDataset();
+      const area = resolveArea(
+        ds,
+        args.campus ?? (args.lat === undefined ? readProfile().home_campus : null),
+        args.lat,
+        args.lon,
+      );
+      if (!area) return fail("Provide a campus (see list_coverage) or lat/lon inside a covered city.");
+      try {
+        const found = await findRestaurants({
+          lat: area.lat,
+          lon: area.lon,
+          radius_m: 3000,
+          limit: 400,
+          endpoint: ctx.overpassUrl,
+        });
+        const r = found.find(
+          (x) => namesMatch(args.name, x.name) || (x.brand !== null && namesMatch(args.name, x.brand)),
+        );
+        if (!r)
+          return fail(`Couldn't find "${args.name}" within 3 km on OpenStreetMap. Try the exact name or coordinates.`);
+        const place = placeForRestaurant(r, ds.places);
+        const tax = taxFor(area.region, area.city);
+        const withTax = (m: number) =>
+          tax && !tax.included_in_menu_price ? m + Math.round((m * tax.rate_bps) / 10_000) : m;
+        return json({
+          ...enrich(ds, r, area),
+          menu_all_in:
+            place?.menu
+              .slice(0, 40)
+              .map((m) => ({ item: m.name, all_in: formatMoney(withTax(m.price.amount_minor), m.price.currency) })) ??
+            [],
+          menu_source: place?.menu_source ?? null,
+          recent_student_notes: place?.ratings.flatMap((x) => (x.note ? [x.note] : [])).slice(-5) ?? [],
+          attribution: OSM_ATTRIBUTION,
+        });
+      } catch (e) {
+        return fail((e as Error).message);
+      }
+    },
+  );
+
+  server.registerTool(
+    "prepare_place_submission",
+    {
+      title: "Draft menu prices and/or a student rating",
+      description:
+        "Turn menu prices (e.g. read from a menu or receipt photo the user shared with you) and/or the user's 'worth it' rating " +
+        "into a community submission. Prices as printed on the menu (pre-tax), in minor units. NEVER sends anything: returns a " +
+        "prefilled GitHub issue link for the USER to review and submit. Don't include card numbers, names or order numbers.",
+      inputSchema: {
+        name: z.string().min(2).describe("Restaurant name"),
+        campus: z.string().optional(),
+        lat: z.number().min(-90).max(90).describe("Restaurant latitude (from place_details/find_restaurants)"),
+        lon: z.number().min(-180).max(180),
+        osm: z.string().optional().describe("OSM id like node/123 from place_details"),
+        menu: z
+          .array(
+            z.object({ name: z.string(), price_minor: z.number().int().positive(), category: z.string().optional() }),
+          )
+          .max(150)
+          .optional(),
+        menu_source: z.enum(["website", "photo", "receipt", "in_person"]).optional(),
+        menu_source_url: z.string().optional(),
+        rating: z
+          .object({
+            worth_it: z.number().int().min(1).max(5),
+            portion: z.number().int().min(1).max(5).optional(),
+            student_friendly: z.number().int().min(1).max(5).optional(),
+            note: z.string().max(200).optional(),
+          })
+          .optional(),
+      },
+      annotations: { readOnlyHint: true },
+    },
+    async (args) => {
+      const ds = await ctx.getDataset();
+      const area = resolveArea(ds, args.campus, args.lat, args.lon);
+      if (!area) return fail("That location isn't in a covered city yet.");
+      return json(
+        preparePlaceSubmission(
+          {
+            place: {
+              name: args.name,
+              country: area.region.country,
+              region: area.region.region,
+              city: area.city,
+              lat: args.lat,
+              lon: args.lon,
+              osm: args.osm ?? null,
+            },
+            currency: area.region.currency,
+            menu: args.menu,
+            menu_source: args.menu_source ?? null,
+            menu_source_url: args.menu_source_url ?? null,
+            rating: args.rating,
+          },
+          { repo: ctx.repo },
+        ),
+      );
+    },
+  );
+
+  server.registerPrompt(
+    "review_sweep",
+    {
+      title: "Review sweep: what does everyone say about this place?",
+      description:
+        "Has your AI check reviews across Google Maps, Yelp, Beli, Reddit, blogs and delivery apps with its own web search, " +
+        "then summarize where they agree and disagree, with links. munchmap stores none of it.",
+      argsSchema: {
+        restaurant: z.string().describe("Restaurant name"),
+        city: z.string().describe("City, e.g. Champaign IL"),
+      },
+    },
+    ({ restaurant, city }) => ({
+      messages: [
+        {
+          role: "user",
+          content: {
+            type: "text",
+            text: [
+              `Do a review sweep for "${restaurant}" in ${city}.`,
+              "1. Call munchmap's place_details first for deals, all-in prices, student ratings and links.",
+              "2. Use your web search to read what each source says: Google Maps, Yelp, Beli, Reddit (r/<city or campus>), food blogs/local news, TikTok/Instagram mentions, and delivery-app ratings if visible.",
+              "3. Give me: a short per-source summary with its rating and number of reviews when shown, and a link to each source you actually opened.",
+              "4. Call out disagreements and likely bias (e.g. Beli skews foodie, delivery-app ratings reflect delivery not food, Google has volume but noise).",
+              "5. Finish with: best value orders, what to skip, the cheapest all-in way to get it (pickup vs apps), and whether students think it's worth it.",
+              "Never invent reviews or ratings. If you can't open a source, say so. Don't paste long passages; summarize in your own words.",
             ].join("\n"),
           },
         },

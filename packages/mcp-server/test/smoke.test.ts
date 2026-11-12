@@ -38,11 +38,13 @@ describe("munchmap MCP server", () => {
       "find_restaurants",
       "get_profile",
       "list_coverage",
+      "place_details",
       "prepare_deal_submission",
+      "prepare_place_submission",
       "set_profile",
     ]);
     const { prompts } = await client.listPrompts();
-    expect(prompts.map((p) => p.name)).toContain("find_deals_in_my_inbox");
+    expect(prompts.map((p) => p.name)).toEqual(expect.arrayContaining(["find_deals_in_my_inbox", "review_sweep"]));
   });
 
   it("profile round-trips and drives find_deals", async () => {
@@ -82,5 +84,29 @@ describe("munchmap MCP server", () => {
     expect(data.yaml).toContain("https://burrito.example/deals");
     expect(data.yaml).not.toContain("uid=42");
     expect(data.issue_url).toMatch(/^https:\/\/github\.com\/.+\/issues\/new\?/);
+  });
+
+  it("prepare_place_submission drafts menu + rating without sending", async () => {
+    const { data } = await call("prepare_place_submission", {
+      name: "Example Pizza",
+      lat: 40.11,
+      lon: -88.24,
+      menu: [{ name: "Cheese slice", price_minor: 350 }],
+      menu_source: "photo",
+      rating: { worth_it: 5, note: "call me at 217-555-0100" },
+    });
+    expect(data.ok).toBe(true);
+    expect(data.yaml).toContain("kind: place");
+    expect(data.yaml).not.toContain("555-0100");
+  });
+
+  it("review_sweep prompt tells the AI to cite sources and not invent reviews", async () => {
+    const res = await client.getPrompt({
+      name: "review_sweep",
+      arguments: { restaurant: "Example Pizza", city: "Champaign IL" },
+    });
+    const text = (res.messages[0]?.content as { text: string }).text;
+    expect(text).toContain("Never invent reviews");
+    expect(text).toContain("place_details");
   });
 });

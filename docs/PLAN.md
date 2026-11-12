@@ -2,7 +2,7 @@
 
 > Skyscanner for food, built for broke college students. A free, open-source tool that finds the cheapest and best food near you for pickup and delivery. It pulls together deals from delivery apps, restaurants' own sites and apps, loyalty programs, surplus-food apps and student discounts.
 
-Last updated: 2026-11-12 · Status: **Phase 1 nearly done · Phase 2 started**
+Last updated: 2026-11-12 · Status: **Phase 1 done · Phase 2 (map-first) in progress**
 
 ## Launch coverage
 | Campus | slug | City | Region |
@@ -69,11 +69,21 @@ Total running cost to the project: **$0**. Users bring their own AI. See `docs/P
 - [x] Deal bot: issues with a YAML block (from the web app or MCP) become PRs automatically; plain forms get labeled `needs-triage`
 - [ ] **Go public:** run gitleaks over the history, enable branch protection, Dependabot, secret scanning, private vulnerability reporting and Discussions, install the DCO app, and seed 10 good first issues
 
-### Phase 2: Personalization and easy submissions
+### Phase 1.5: Map-first app ("advanced Google Maps for cheap eats") ✅ 2026-11-12
+Data plan: `docs/DATA-STRATEGY.md`.
+1. [x] **Map MVP:** MapLibre + OpenFreeMap tiles, OSM restaurant pins (live + weekly ODbL snapshots), deal pins with all-in price labels, filters (deals, on now, open now, all-in price, cuisine, diet, takeaway, delivery, student), explainable "for you" list, detail card
+2. [x] **Menu prices + student ratings:** photo/receipt → the user's own AI (local Ollama + Gemma, or a BYO OpenAI-compatible key) → scrubbed submission → bot PR into `data/*/places`; "worth it", portion and student-friendly ratings
+3. [x] **Review sweep + deep links:** links to Google Maps, Yelp, Beli, Reddit and delivery apps on every pin; MCP `review_sweep` prompt (the user's AI searches and cites, we store nothing) + `place_details` + `prepare_place_submission`
+4. [x] **Import my favourites** (Beli export / Google Takeout list / CSV / pasted names), parsed on-device, plus profile-based "for you" ranking
+5. [ ] Overture Maps + Foursquare open places to fill OSM gaps (pre-extracted per campus in CI)
+6. [ ] Optional bring-your-own Google Places key for ratings and photos (user's free tier, Google attribution, never stored)
+7. [ ] Trim the main bundle (lazy-load opening_hours.js); offline map tiles for campus areas
+
+
 - [ ] Auto-deploy the Worker from CI (`CLOUDFLARE_API_TOKEN` secret) whenever `data/` changes
 - [ ] Cache OSM results in Workers KV (free tier) to go easy on public Overpass servers
 - [ ] Profile-aware ranking (diet, budget, memberships you already pay for, loyalty programs)
-- [ ] Screenshot/link upload with local extraction (web) and the same scrub-and-review flow
+- [x] Screenshot/photo upload with extraction by the user's own model (menus & receipts) → same scrub-and-review flow. Deal screenshots next.
 - [ ] Telegram bot (self-hostable; BYO AI key or local Ollama)
 - [ ] Community verification: "still valid?" votes; deals with many 👎 get re-checked
 - [x] Remote MCP endpoint live at `https://munchmap-mcp.munchmap.workers.dev/mcp`. **To do:** submit it to the Meta Muse connector catalog

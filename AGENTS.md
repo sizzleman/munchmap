@@ -6,7 +6,7 @@ This is the single source of truth. Tool-specific files (`CLAUDE.md`, `.agent/ru
 ## What this project is
 
 **munchmap** is a free, open-source "Skyscanner for food". It compares deals and the _effective price_ of food across delivery apps, restaurants' own channels, pickup, loyalty programs and student discounts, so college students can eat well for less.
-Launch campuses: UIUC, UMass Amherst, UC Santa Cruz, UT Austin, Claremont McKenna, UBC, UofT, Western, plus Dubai. Roadmap: `docs/PLAN.md`. Privacy design: `docs/PRIVACY.md`. Licensing: `docs/LICENSING.md`.
+Launch campuses: UIUC, UMass Amherst, UC Santa Cruz, UT Austin, Claremont McKenna, UBC, UofT, Western, plus Dubai. Roadmap: `docs/PLAN.md`. Data sources and what is allowed: `docs/DATA-STRATEGY.md`. Privacy design: `docs/PRIVACY.md`. Licensing: `docs/LICENSING.md`.
 
 ## Before you start any task
 
@@ -37,11 +37,14 @@ packages/core/              ✅ browser-safe: schemas, deal search, effective pr
                                submission drafts, OSM lookup.   "@munchmap/core/node" = filesystem loader
 packages/mcp-server/        ✅ server.ts (tool definitions, shared) · index.ts (stdio, local profile)
                                http.ts (stateless Streamable HTTP) · serve.ts (Node self-host)
-apps/web/                   ✅ static PWA (Vite + vanilla TS); renders community text via textContent only
+apps/web/                   ✅ static PWA (Vite + vanilla TS): map (MapLibre/OpenFreeMap), deals, compare, share, me.
+                               Renders community text via textContent only. Personal data in localStorage only.
 apps/worker/                ✅ Cloudflare Worker wrapping http.ts; data baked in at deploy
 packages/sources/<x>/       ⏳ future adapters; each exports { id, accessMethod, regions, fetch() }
 data/<CC>/<REGION>/         region.yaml (cities + campuses), deals/*.yaml
+data/<CC>/<REGION>/places/  community menu prices + student ratings per restaurant (keyed by OSM id)
 data/<CC>/_national/        deals/*.yaml (region "*"), platforms/*.yaml (fees + memberships)
+public/osm/                 weekly OpenStreetMap snapshots per campus (ODbL, separate license!)
 archive/                    expired deals (moved by the nightly workflow)
 public/                     PWA assets + generated data.json (served by web app and Pages)
 scripts/                    validate-data, build-data, expire-deals, check-licenses, build-mcp, issue-to-deal (bot)
@@ -66,6 +69,7 @@ npm run serve:mcp      # remote MCP over HTTP at :8787/mcp
 npm run dev:web        # web app at :5173
 npm run build:web      # static site → apps/web/dist
 npm run build:mcp      # npm package → dist/munchmap-mcp
+npm run snapshot:osm   # refresh public/osm snapshots (needs Overpass to be up)
 ```
 
 ## Conventions

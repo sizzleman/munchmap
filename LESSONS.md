@@ -27,6 +27,30 @@ Rules:
 
 ## Log
 
+### 2026-11-12 · web · MapLibre v6 needs its worker URL set under Vite
+- **What happened:** The map was blank, with "Worker failed to load" in the console.
+- **Lesson:** Import `maplibre-gl/dist/maplibre-gl-worker.mjs?url` and call `setWorkerUrl()` before creating the map. Lazy-load MapLibre (≈300 KB gz) so other tabs stay light.
+- **Source:** agent:claude-code (browser test)
+- **Status:** active
+
+### 2026-11-12 · sources · Don't build a map on live public Overpass alone
+- **What happened:** Overpass took 30s+ or failed outright from the browser, from our sandbox and even from CI, so the map showed no pins.
+- **Lesson:** Ship pre-built per-campus snapshots (`public/osm/`, ODbL, refreshed weekly in CI) and query live only outside the snapshot. The snapshot script refuses to overwrite a good file with a much smaller (partial) result.
+- **Source:** agent:claude-code
+- **Status:** active
+
+### 2026-11-12 · data · Reviews and menus from other platforms: link or let the user's AI look
+- **What happened:** We wanted Google/Yelp/Beli/delivery-app reviews and menus in one place.
+- **Lesson:** Don't scrape or store them. Use deep links on every place, the `review_sweep` prompt (the user's own AI searches and cites), on-device import of the user's *own* exports (Beli), and our own student ratings and menu prices. See docs/DATA-STRATEGY.md.
+- **Source:** human + agent:claude-code
+- **Status:** active
+
+### 2026-11-12 · ci · Some packages declare no SPDX license
+- **What happened:** `suncalc` (via opening_hours.js) has no `license` field, so the license gate failed.
+- **Lesson:** `check-licenses` now detects MIT/BSD/ISC from the LICENSE text. For anything else, read the license yourself and add it to THIRD_PARTY_NOTICES.md.
+- **Source:** agent:claude-code
+- **Status:** active
+
 ### 2026-11-12 · oss · Hosting and registries leak maintainer identity
 - **What happened:** Cloudflare named the workers.dev subdomain after the maintainer's email username, which made it public in the connector URL. npm also shows every maintainer's account email in public package metadata.
 - **Lesson:** Before publishing anything, check what identity it exposes. Use a project-named subdomain (`munchmap.workers.dev`). Give npm accounts an email alias, not a personal address, and commit with the GitHub noreply email. Turn off CLI telemetry (`wrangler telemetry disable`). Renaming a workers.dev subdomain means DELETE then PUT on `/accounts/{id}/workers/subdomain`, and the new DNS takes a few minutes.
