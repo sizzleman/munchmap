@@ -1,0 +1,19 @@
+country: CA
+region: "ON"
+name: Ontario
+currency: CAD
+timezone: America/Toronto
+tax:
+  rate_bps: 1300
+  included_in_menu_price: false
+  note: "HST 13%. Some prepared food under $4 may be partially relieved; treated as 13% for estimates."
+  source_url: https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html
+  verified_at: 2026-11-12
+tipping: { customary: true, default_percent: 15 }
+platforms: [doordash, ubereats, skip]
+cities:
+  - { slug: toronto, name: Toronto, lat: 43.6532, lon: -79.3832 }
+  - { slug: london, name: "London", lat: 42.9849, lon: -81.2453 }
+campuses:
+  - { slug: uoft, name: "University of Toronto (St. George)", city: toronto, lat: 43.6629, lon: -79.3957 }
+  - { slug: western, name: "Western University", city: london, lat: 43.0096, lon: -81.2737 }

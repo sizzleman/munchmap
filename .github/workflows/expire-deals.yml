@@ -1,0 +1,20 @@
+name: Archive expired deals
+on:
+  schedule: [{ cron: "0 9 * * *" }]
+  workflow_dispatch:
+permissions: { contents: write, pull-requests: write }
+jobs:
+  expire:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version-file: .nvmrc, cache: npm }
+      - run: npm ci
+      - run: npm run expire:deals
+      - uses: peter-evans/create-pull-request@v7
+        with:
+          branch: bot/expire-deals
+          title: "data: archive expired deals"
+          commit-message: "data: archive expired deals"
+          body: Automated daily cleanup of deals past their `expires` date.

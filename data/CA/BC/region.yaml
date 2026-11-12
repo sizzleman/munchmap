@@ -1,0 +1,17 @@
+country: CA
+region: BC
+name: British Columbia
+currency: CAD
+timezone: America/Vancouver
+tax:
+  rate_bps: 500
+  included_in_menu_price: false
+  note: "GST 5%. BC PST generally does not apply to restaurant food (it does to alcohol)."
+  source_url: https://www.canada.ca/en/revenue-agency/services/tax/businesses/topics/gst-hst-businesses/charge-collect-which-rate/calculator.html
+  verified_at: 2026-11-12
+tipping: { customary: true, default_percent: 15 }
+platforms: [doordash, ubereats, skip]
+cities:
+  - { slug: vancouver, name: Vancouver, lat: 49.2827, lon: -123.1207 }
+campuses:
+  - { slug: ubc, name: "University of British Columbia", city: vancouver, lat: 49.2606, lon: -123.2460 }

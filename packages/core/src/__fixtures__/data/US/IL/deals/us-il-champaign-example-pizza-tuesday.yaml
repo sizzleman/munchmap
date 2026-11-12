@@ -1,0 +1,18 @@
+id: us-il-champaign-example-pizza-tuesday
+title: "$7.99 large pizza on Tuesdays"
+brand: Example Pizza
+country: US
+region: IL
+city: champaign
+campuses: [test-u]
+channels: [pickup]
+type: fixed_price
+value: { amount_minor: 799, currency: USD }
+schedule: { days: [tue], start: "11:00", end: "23:00", tz: America/Chicago }
+conditions: null
+student_only: false
+promo_code: null
+source_url: https://example.com/deals
+verified_at: 2026-11-01
+expires: null
+submitted_by: test

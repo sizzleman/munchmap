@@ -1,0 +1,18 @@
+id: ae-du-dubai-makira-tuesday-unlimited-tantan-ramen
+title: "Unlimited TanTan ramen on Tuesday evenings at MaKiRa (from AED 69)"
+brand: MaKiRa
+country: AE
+region: DU
+city: dubai
+campuses: []
+channels: [dine_in]
+type: fixed_price
+value: { amount_minor: 6900, currency: AED }
+schedule: { days: [tue], start: "18:00", end: "23:00", tz: Asia/Dubai }
+conditions: "Price shown on the official page is a starting price per person (from AED 69). Alcohol-free dining. Smart casual dress code, no shorts or flip-flops. Validity dates not stated on the page."
+student_only: false
+promo_code: null
+source_url: https://www.dusit.com/dusitthani-dubai/specialoffers/all-you-can-eat-tantan-ramen-at-makira
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

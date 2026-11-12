@@ -1,0 +1,18 @@
+id: us-national-chipotle-u-rewards-student-points
+title: "Chipotle U Rewards: 1,000 bonus points and 12 points per $1 for verified college students"
+brand: Chipotle
+country: US
+region: "*"
+city: "*"
+campuses: []
+channels: [first_party_app, first_party_site, pickup]
+type: loyalty
+value: null
+schedule: null
+conditions: "Requires college enrollment verification through ID.me in a Chipotle Rewards account. 1,000 bonus points posted after verification. Earns 12 points per $1 spent (vs. 10 standard). Points expire after 6 months of account inactivity. Rewards redeemable for free items; no fixed dollar value stated on source."
+student_only: true
+promo_code: null
+source_url: https://www.chipotle.com/chipotle-u-rewards
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

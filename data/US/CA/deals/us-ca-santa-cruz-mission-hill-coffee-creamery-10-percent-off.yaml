@@ -1,0 +1,18 @@
+id: us-ca-santa-cruz-mission-hill-coffee-creamery-10-percent-off
+title: "10% off coffee and ice cream for students at Mission Hill Coffee and Creamery"
+brand: Mission Hill Coffee and Creamery
+country: US
+region: CA
+city: santa-cruz
+campuses: [ucsc]
+channels: [other]
+type: percent_off
+value: { percent: 10 }
+schedule: null
+conditions: "Applies to coffee and ice cream per the Downtown Santa Cruz student-discounts listing. Valid student ID required under the page-wide terms. Channels not specified by source; confirm with the shop."
+student_only: true
+promo_code: null
+source_url: https://downtownsantacruz.com/discover/student-discounts
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

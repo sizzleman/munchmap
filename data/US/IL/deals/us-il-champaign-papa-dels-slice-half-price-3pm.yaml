@@ -1,0 +1,18 @@
+id: us-il-champaign-papa-dels-slice-half-price-3pm
+title: "Half-price pizza slices 3pm-4pm at Papa Del's Neil Street location, until sold out"
+brand: "Papa Del's"
+country: US
+region: IL
+city: champaign
+campuses: [uiuc]
+channels: [dine_in, pickup]
+type: percent_off
+value: { percent: 50 }
+schedule: null
+conditions: "Applies to pizza by the slice at the Neil Street location. Slices listed at $4.24 to $5.24 before discount on source page. Not available for delivery. Until sold out. Daily window 3pm-4pm; the source does not state which days, so check before going."
+student_only: false
+promo_code: null
+source_url: https://www.papadels.com/
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

@@ -1,0 +1,18 @@
+id: ca-on-toronto-uoft-dining-tbucks-5-percent
+title: "5% off when paying with TBucks at selected U of T dining halls and retail"
+brand: U of T Dining
+country: CA
+region: ON
+city: toronto
+campuses: [uoft]
+channels: [dine_in]
+type: percent_off
+value: { percent: 5 }
+schedule: null
+conditions: "Paid with TBucks (funded through TCard or Guest Card). Listed at Chestnut, New College, Oak House and CampusOne dining halls and select retail locations; the page does not name the retail locations. No dates stated on source page. Confirm current locations before relying on this."
+student_only: false
+promo_code: null
+source_url: https://ueat.utoronto.ca/where-to-eat/
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

@@ -1,0 +1,18 @@
+id: us-national-example-burger-student
+title: "10% off with student ID"
+brand: Example Burger
+country: US
+region: "*"
+city: "*"
+campuses: []
+channels: [pickup, doordash]
+type: percent_off
+value: { percent: 10 }
+schedule: null
+conditions: "Show student ID"
+student_only: true
+promo_code: null
+source_url: https://example.com/student
+verified_at: 2026-10-01
+expires: 2026-12-31
+submitted_by: test

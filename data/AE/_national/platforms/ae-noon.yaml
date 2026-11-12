@@ -1,0 +1,26 @@
+id: ae-noon
+platform: noon
+country: AE
+name: noon
+website: https://www.noon.com
+memberships:
+  - id: noon-one
+    name: noon One
+    # Help center lists AED 15/month as a limited-time offer with no start or end dates. Standard price not confirmed, so null.
+    price: null
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: { amount_minor: 3000, currency: AED }
+    service_fee_reduced: null
+    perks:
+      - "Free delivery on noon Food restaurant orders above AED 30"
+      - "Free delivery on noon Minutes orders above AED 25"
+      - "Exclusive discounts across noon platforms"
+      - "Priority customer support"
+      - "Discounted IPL streaming at AED 5"
+    # Thresholds per platform: noon Express above AED 50, noon Grocery above AED 100, now now and supermall above AED 50.
+    source_url: "https://help.noon.com/portal/en/kb/articles/noon-one-shipping-fees"
+    verified_at: 2026-11-12
+fees_note: "noon One covers noon, noon Food, noon Minutes, now now and noon Grocery, with a free delivery threshold on each platform. The UAE help page lists AED 15/month only as a limited-time offer without dates, so the standard price is unconfirmed."
+source_url: "https://help.noon.com/portal/en/kb/articles/noon-one-shipping-fees"
+verified_at: 2026-11-12

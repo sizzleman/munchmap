@@ -1,0 +1,22 @@
+id: us-grubhub
+platform: grubhub
+country: US
+name: Grubhub
+website: https://www.grubhub.com
+memberships:
+  - id: grubhub-plus
+    name: Grubhub+
+    # LOW CONFIDENCE: price and threshold come from a Grubhub announcement dated 2022-08-18, not from a current page. Re-check before use.
+    price: { amount_minor: 999, currency: USD }
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: { amount_minor: 1200, currency: USD }
+    service_fee_reduced: null
+    perks:
+      - "Unlimited $0 delivery fees on eligible orders at the stated minimum"
+    # Amazon Prime and Prime Student Grubhub+ perks and campus student plans were reported by third parties but could not be confirmed on an opened official page, so they are omitted here.
+    source_url: "https://get.grubhub.com/blog/bank-of-america/"
+    verified_at: 2022-08-18
+fees_note: "Grubhub+ removes the delivery fee on eligible orders over a set subtotal; the Grubhub page opened here dates from 2022 and does not describe service fees. Grubhub's current help center and Amazon Prime offer pages could not be opened, so this entry needs human review."
+source_url: "https://get.grubhub.com/blog/bank-of-america/"
+verified_at: 2026-11-12

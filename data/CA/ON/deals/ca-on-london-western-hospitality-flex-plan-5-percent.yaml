@@ -1,0 +1,18 @@
+id: ca-on-london-western-hospitality-flex-plan-5-percent
+title: "5% off at Hospitality Services eateries on campus with Flex Meal Plan"
+brand: Western Hospitality Services
+country: CA
+region: ON
+city: london
+campuses: [western]
+channels: [dine_in]
+type: percent_off
+value: { percent: 5 }
+schedule: null
+conditions: "Requires adding at least $50 to a Western ONECard under the Flex Meal Plan (students, staff and faculty). Applies at 20+ Hospitality Services eateries on campus. Partner locations and vending machines are charged full retail price. Plan pricing may change; confirm with Hospitality Services."
+student_only: false
+promo_code: null
+source_url: https://food.uwo.ca/node/70
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

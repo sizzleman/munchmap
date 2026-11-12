@@ -1,0 +1,36 @@
+id: ca-ubereats
+platform: ubereats
+country: CA
+name: Uber Eats
+website: https://www.ubereats.com
+memberships:
+  - id: uber-one
+    name: Uber One
+    price: { amount_minor: 999, currency: CAD }
+    period: month
+    # Student price $4.99/month shown on the Uber Canada student page (no currency label; Canadian page): https://www.uber.com/uber-one/student
+    student_price: { amount_minor: 499, currency: CAD }
+    free_delivery_min_subtotal: { amount_minor: 1500, currency: CAD }
+    service_fee_reduced: true
+    perks:
+      - "$0 delivery fee and 5% off from eligible restaurants with a $15 minimum order"
+      - "Discounted service fee from participating stores when order minimums are met"
+      - "Grocery and non-restaurant stores: $0 delivery fee at a $40 minimum, where available"
+    source_url: "https://www.ubereats.com/ca/uber-one"
+    verified_at: 2026-11-12
+  - id: uber-one-annual
+    name: Uber One Annual
+    price: { amount_minor: 9999, currency: CAD }
+    period: year
+    student_price: null
+    free_delivery_min_subtotal: { amount_minor: 1500, currency: CAD }
+    service_fee_reduced: true
+    perks:
+      - "Annual billing of Uber One"
+      - "Same member benefits as monthly Uber One"
+    # A second Uber Canada page showed a $96/year figure; the ubereats.com/ca page shows $99.99/year. Verify before relying on either.
+    source_url: "https://www.ubereats.com/ca/uber-one"
+    verified_at: 2026-11-12
+fees_note: "Uber One members get $0 delivery fees and a discounted service fee on eligible orders that meet the store's minimum; taxes and fees do not count toward minimums. The Canadian minimum is $15 at restaurants and $40 at grocery and non-restaurant stores."
+source_url: "https://www.ubereats.com/ca/uber-one"
+verified_at: 2026-11-12

@@ -1,0 +1,18 @@
+id: us-ma-amherst-antonios-pizza-wacky-wednesday-slices
+title: "$3 slices every Wednesday at Antonio's Pizza"
+brand: "Antonio's Pizza"
+country: US
+region: MA
+city: amherst
+campuses: [umass]
+channels: [dine_in, pickup]
+type: fixed_price
+value: { amount_minor: 300, currency: USD }
+schedule: { days: [wed], start: null, end: null, tz: America/New_York }
+conditions: "Source describes it as 'Wacky Wednesday' with '$3 slices' for 'every slice, all day'. Chain-wide page lists the Amherst location (31 North Pleasant Street); confirm it applies in store. Source notes published prices may be cash-discount pricing and card prices may be higher."
+student_only: false
+promo_code: null
+source_url: https://antoniospizza.com/
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

@@ -1,0 +1,38 @@
+id: ca-doordash
+platform: doordash
+country: CA
+name: DoorDash
+website: https://www.doordash.com
+memberships:
+  - id: dashpass
+    name: DashPass
+    price: { amount_minor: 999, currency: CAD }
+    period: month
+    # Student price reported by iPhone in Canada (2026-09-03), not on an official Canadian page: https://www.iphoneincanada.ca/2026/09/03/doordash-canada-offers-students-a-free-year-of-dashpass/
+    student_price: { amount_minor: 499, currency: CAD }
+    free_delivery_min_subtotal: null
+    service_fee_reduced: true
+    perks:
+      - "$0 delivery fees on eligible orders"
+      - "Reduced service fees on eligible restaurant orders that meet the minimum"
+      - "Special discounts at participating merchants"
+      - "Priority customer support"
+    # Official en-CA page gives the price with no currency label; CAD is inferred from the Canadian help center.
+    source_url: "https://help.doordash.com/en-ca/consumers/article/dashpass-benefits-terms-and-conditions-canada"
+    verified_at: 2026-11-12
+  - id: dashpass-annual
+    name: DashPass Annual Plan
+    price: { amount_minor: 9600, currency: CAD }
+    period: year
+    student_price: { amount_minor: 4800, currency: CAD }
+    free_delivery_min_subtotal: null
+    service_fee_reduced: true
+    perks:
+      - "Annual billing of the standard DashPass plan"
+      - "Same member benefits as monthly DashPass"
+    # Annual student price of $48/year reported by iPhone in Canada (2026-09-03), not on an official Canadian page.
+    source_url: "https://help.doordash.com/en-ca/consumers/article/dashpass-benefits-terms-and-conditions-canada"
+    verified_at: 2026-11-12
+fees_note: "Members get $0 delivery fees and reduced service fees on eligible restaurant orders that meet the per-merchant subtotal minimum (the minimum is shown per merchant in the app). Canadian student pricing is reported in news only; the official en-CA student page opened here did not show amounts."
+source_url: "https://help.doordash.com/en-ca/consumers/article/what-is-dashpass"
+verified_at: 2026-11-12

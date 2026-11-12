@@ -1,0 +1,16 @@
+country: AE
+region: DU
+name: Dubai
+currency: AED
+timezone: Asia/Dubai
+tax:
+  rate_bps: 500
+  included_in_menu_price: true
+  note: "UAE VAT 5%; consumer prices must be shown VAT-inclusive."
+  source_url: https://u.ae/en/information-and-services/finance-and-investment/taxation/valueaddedtaxvat
+  verified_at: 2026-11-12
+tipping: { customary: false, default_percent: 0 }
+platforms: [talabat, deliveroo, careem, noon, keeta]
+cities:
+  - { slug: dubai, name: Dubai, lat: 25.2048, lon: 55.2708 }
+campuses: []

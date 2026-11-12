@@ -1,0 +1,18 @@
+name: 🐛 Bug or wrong deal
+description: Something broken, or a deal that's expired or incorrect
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      {
+        label: What happened?,
+        description: "For a wrong deal, include its id (e.g. us-ma-amherst-...) and what changed.",
+      }
+    validations: { required: true }
+  - type: textarea
+    id: expected
+    attributes: { label: What did you expect? }
+  - type: input
+    id: env
+    attributes: { label: Where? (Claude Desktop, Gemini CLI, web, OS…) }

@@ -1,0 +1,38 @@
+id: ae-deliveroo
+platform: deliveroo
+country: AE
+name: Deliveroo
+website: https://deliveroo.ae
+memberships:
+  - id: deliveroo-plus-gold
+    name: Deliveroo Plus Gold
+    # Monthly price NOT confirmed. Sources conflict: AED 29 (deliveroo.ae news, 16 Jan 2024), AED 39 (April 2026 article, not opened), AED 19.00 (deliveroo.ae/plus, undated). Left null for human review.
+    price: null
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: { amount_minor: 3000, currency: AED }
+    service_fee_reduced: null
+    perks:
+      - "Unlimited free delivery on restaurant orders over AED 30 and grocery and retail orders over AED 50"
+      - "10% credit back on eligible restaurant and grocery orders over AED 80 (launch period)"
+      - "24/7 priority support"
+      - "Plus Rewards"
+    # Annual plan: 12 months for the price of 10 (help center, Oct 2025); limited-time 12 months for the price of 8 (Khaleej Times, 24 Oct 2025).
+    source_url: "https://help.deliveroo.com/en/articles/12570802-deliveroo-plus-gold-just-got-better-new-perks-for-members-uae"
+    verified_at: 2026-11-12
+  - id: deliveroo-plus-silver
+    name: Deliveroo Plus Silver
+    price: null
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: { amount_minor: 6000, currency: AED }
+    service_fee_reduced: null
+    perks:
+      - "Unlimited free delivery on orders over AED 60"
+      - "Only available through partners"
+    # Price not published; available only through partner offers.
+    source_url: "https://deliveroo.ae/plus"
+    verified_at: 2026-11-12
+fees_note: "Deliveroo Plus gives unlimited free delivery above a subtotal minimum (AED 30 for restaurants and AED 50 for grocery and retail on Plus Gold). The current monthly price could not be confirmed from a dated official source, so it is null pending review."
+source_url: "https://help.deliveroo.com/en/articles/12570802-deliveroo-plus-gold-just-got-better-new-perks-for-members-uae"
+verified_at: 2026-11-12

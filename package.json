@@ -1,0 +1,32 @@
+{
+  "name": "munchmap",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Free, open-source 'Skyscanner for food': compare deals and the real price of food across pickup, delivery apps and restaurants' own channels.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "test": "vitest run",
+    "lint": "biome check .",
+    "format": "biome check --write .",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "validate:data": "tsx scripts/validate-data.ts",
+    "build:data": "tsx scripts/build-data.ts",
+    "expire:deals": "tsx scripts/expire-deals.ts",
+    "dev:mcp": "tsx packages/mcp-server/src/index.ts",
+    "licenses:check": "tsx scripts/check-licenses.ts"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "^2.6.7",
+    "@types/node": "^26.6.6",
+    "tsx": "^4.23.15",
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.12"
+  }
+}

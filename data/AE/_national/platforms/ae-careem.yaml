@@ -1,0 +1,25 @@
+id: ae-careem
+platform: careem
+country: AE
+name: Careem
+website: https://www.careem.com
+memberships:
+  - id: careem-plus
+    name: Careem Plus
+    price: { amount_minor: 2900, currency: AED }
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: null
+    service_fee_reduced: null
+    perks:
+      - "Unlimited free food delivery"
+      - "Exclusive food discounts"
+      - "10% cashback on rides"
+      - "Zero fees on international money transfers via Careem Pay"
+      - "Discounts on Quik groceries, DineOut and home services"
+    # Price rose from AED 19 to AED 29 per month from 1 July 2026 (renewals on or after that date).
+    source_url: "https://www.thenationalnews.com/lifestyle/2026/06/05/careem-plus-price-to-rise-more-than-50-from-july-jumping-from-dh19-to-dh29-per-month/"
+    verified_at: 2026-11-12
+fees_note: "Careem Plus includes unlimited free food delivery and food discounts; the minimum order for free delivery and service fee wording could not be confirmed on an opened official page (help.careem.com returned 403). The price is from June 2026 news reporting the July 2026 increase."
+source_url: "https://www.careem.com/en-ae/cplus/"
+verified_at: 2026-11-12

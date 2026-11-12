@@ -1,0 +1,18 @@
+id: us-ma-amherst-marriott-meals-three-course-bundle
+title: "$16.50 three-course bundle at Marriott Meals, student-run restaurant, Tuesday and Wednesday dinner"
+brand: "Marriott Meals"
+country: US
+region: MA
+city: amherst
+campuses: [umass]
+channels: [dine_in]
+type: fixed_price
+value: { amount_minor: 1650, currency: USD }
+schedule: { days: [tue, wed], start: "17:45", end: "18:45", tz: America/New_York }
+conditions: "Student-run restaurant in the Marriott Center, Campus Center 11th floor. Dinner service Tue and Wed 5:45-6:45pm; Wednesday lunch 11:45am-12:45pm also listed. Source does not say which courses are in the bundle. Reservations suggested at 413.545.0877 or marriottmeals@isenberg.umass.edu. Source lists Fall 2026 menu; semester dates not stated, so the deal may only run during the academic term."
+student_only: false
+promo_code: null
+source_url: https://www.isenberg.umass.edu/htm/meals
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

@@ -1,0 +1,18 @@
+id: ae-du-dubai-salt-student-15-percent
+title: "15% student discount at SALT, year-round"
+brand: SALT
+country: AE
+region: DU
+city: dubai
+campuses: []
+channels: [dine_in]
+type: percent_off
+value: { percent: 15 }
+schedule: null
+conditions: "Valid student ID required per Gulf News (university student ID). Applies at any SALT branch in the UAE. Channel not specified in source, assumed in-branch. Not confirmed on SALT's own site; confirm accepted ID with the branch."
+student_only: true
+promo_code: null
+source_url: https://gulfnews.com/lifestyle/uniform-on-free-treats-after-school-offers-running-across-dubai-sharjah-and-abu-dhabi-1.500661784
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

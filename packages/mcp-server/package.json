@@ -1,0 +1,15 @@
+{
+  "name": "@munchmap/mcp-server",
+  "version": "0.1.0",
+  "description": "MCP server that lets your own AI (Claude, ChatGPT, Gemini, ...) find cheap food deals with munchmap.",
+  "license": "AGPL-3.0-or-later",
+  "type": "module",
+  "bin": {
+    "munchmap-mcp": "src/index.ts"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "@munchmap/core": "0.1.0",
+    "zod": "^4.6.7"
+  }
+}

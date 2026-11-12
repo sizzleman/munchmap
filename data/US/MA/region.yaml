@@ -1,0 +1,12 @@
+country: US
+region: MA
+name: Massachusetts
+currency: USD
+timezone: America/New_York
+tax: null # TODO: US restaurant tax varies by city/county; add with source_url (good first issue)
+tipping: { customary: true, default_percent: 15 }
+platforms: [doordash, ubereats, grubhub]
+cities:
+  - { slug: amherst, name: "Amherst", lat: 42.3732, lon: -72.5199 }
+campuses:
+  - { slug: umass, name: "University of Massachusetts Amherst", city: amherst, lat: 42.3868, lon: -72.5301 }

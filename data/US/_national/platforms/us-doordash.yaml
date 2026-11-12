@@ -1,0 +1,38 @@
+id: us-doordash
+platform: doordash
+country: US
+name: DoorDash
+website: https://www.doordash.com
+memberships:
+  - id: dashpass
+    name: DashPass
+    price: { amount_minor: 999, currency: USD }
+    period: month
+    student_price: { amount_minor: 499, currency: USD }
+    free_delivery_min_subtotal: null
+    service_fee_reduced: true
+    perks:
+      - "$0 delivery fees on eligible orders"
+      - "Reduced service fees on eligible orders"
+      - "Special discounts at participating merchants"
+      - "Priority customer support"
+      - "DashPass-only promotions"
+    # Student: $4.99/month after the free period for signups after 2026-08-01 (free $0 for 12 months with SheerID verification). Regular fallback $9.99/month.
+    source_url: "https://help.doordash.com/en-us/consumers/article/free-student-dashpass-terms-and-conditions"
+    verified_at: 2026-11-12
+  - id: dashpass-annual
+    name: DashPass Annual Plan
+    price: { amount_minor: 9600, currency: USD }
+    period: year
+    student_price: null
+    free_delivery_min_subtotal: null
+    service_fee_reduced: true
+    perks:
+      - "Annual billing of the standard DashPass plan"
+      - "Same member benefits as monthly DashPass"
+    # A limited-time first-year promotional price of $59 was seen on a DoorDash help page with no dates; standard renewal is $96/year.
+    source_url: "https://help.doordash.com/en-us/consumers/article/summer-of-dashpass-annual-plan-sale"
+    verified_at: 2026-11-12
+fees_note: "Members get $0 delivery fees and reduced service fees on eligible orders, once the store's subtotal minimum is met (the help center notes a $10 minimum in some areas and sets minimums per merchant). Non-members pay delivery and service fees; the student plan is listed as $0 for 12 months for signups after 2026-08-01, then $4.99/month."
+source_url: "https://help.doordash.com/en-us/consumers/article/what-is-dashpass"
+verified_at: 2026-11-12

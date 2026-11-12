@@ -1,0 +1,24 @@
+id: ae-talabat
+platform: talabat
+country: AE
+name: talabat
+website: https://www.talabat.com
+memberships:
+  - id: talabat-pro
+    name: talabat pro
+    # Standard AED price not confirmed on an official page. The campaign page advertises "as low as AED 19/month". Terms say the fee is set in the app and varies by country.
+    price: null
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: null
+    service_fee_reduced: null
+    perks:
+      - "Unlimited free delivery on eligible orders from participating restaurants and talabat mart"
+      - "Double reward points on qualifying orders"
+      - "Access to the talabat Rewards catalog"
+      - "2-week free trial for new members"
+    source_url: "https://www.talabat.com/uae/campaign/pro"
+    verified_at: 2026-11-12
+fees_note: "Free delivery applies to eligible orders above a minimum that talabat shows when you subscribe and at checkout; the amount was not confirmed on an opened official page. The membership renews every 30 days until cancelled."
+source_url: "https://www.talabat.com/uae/terms"
+verified_at: 2026-11-12

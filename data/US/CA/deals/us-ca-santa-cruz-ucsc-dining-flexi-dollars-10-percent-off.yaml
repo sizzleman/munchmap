@@ -1,0 +1,18 @@
+id: us-ca-santa-cruz-ucsc-dining-flexi-dollars-10-percent-off
+title: "10% discount paying with Flexi Dollars at UCSC Dining locations"
+brand: UCSC Dining
+country: US
+region: CA
+city: santa-cruz
+campuses: [ucsc]
+channels: [dine_in]
+type: percent_off
+value: { percent: 10 }
+schedule: null
+conditions: "Requires a voluntary Flexi Dollars purchase (debit-style account). Applies at UCSC Dining-operated locations. Flexi Dollars for the 2026-27 academic year carry over quarter to quarter and expire June 15, 2027, per the source page."
+student_only: true
+promo_code: null
+source_url: https://dining.ucsc.edu/plans-pricing/voluntary
+verified_at: 2026-11-12
+expires: 2027-06-15
+submitted_by: deal-researcher

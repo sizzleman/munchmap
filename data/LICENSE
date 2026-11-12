@@ -1,0 +1,16 @@
+The munchmap community data in this directory (deals, regions, campuses, platform
+memberships) is licensed under the Creative Commons Attribution-ShareAlike 4.0
+International License (CC BY-SA 4.0). Full text: LICENSE-CC-BY-SA-4.0.txt
+https://creativecommons.org/licenses/by-sa/4.0/
+
+Attribution: "munchmap contributors — https://github.com/sizzleman/munchmap"
+
+You may copy, share and adapt this data, including commercially, as long as you
+give credit and share your adapted version of the data under the same license.
+
+Each record links to its original public source (`source_url`). Facts about
+deals are recorded in our own words; third-party trademarks belong to their owners.
+
+Restaurant data shown by munchmap tools that comes from OpenStreetMap is NOT
+stored here. It is © OpenStreetMap contributors and available under the
+Open Database License (ODbL 1.0): https://www.openstreetmap.org/copyright

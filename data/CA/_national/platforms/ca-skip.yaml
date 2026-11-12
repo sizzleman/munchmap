@@ -1,0 +1,22 @@
+id: ca-skip
+platform: skip
+country: CA
+name: Skip (SkipTheDishes)
+website: https://www.skipthedishes.com
+memberships:
+  - id: skip-plus
+    name: Skip+
+    price: { amount_minor: 999, currency: CAD }
+    period: month
+    student_price: null
+    free_delivery_min_subtotal: null
+    service_fee_reduced: null
+    perks:
+      - "$0 delivery fee on nearly every order at participating partners"
+      - "Free delivery may be subject to a minimum order value, shown before ordering"
+    # Terms state the fee as $9.99 plus taxes per month with no currency code; CAD is inferred from Skip's Canadian service. CIBC cardholders get a 12-month trial and then $6.99/month plus taxes (partner-specific).
+    source_url: "https://cloud.updates.skipthedishes.com/skip%20plus%20terms%20and%20conditions%20en"
+    verified_at: 2026-11-12
+fees_note: "Skip+ members get $0 delivery on eligible orders, subject to a partner minimum order value that is shown before checkout. The official skipthedishes.com pages returned 403, so the price comes from Skip's own terms document, which is undated; no annual price was found."
+source_url: "https://cloud.updates.skipthedishes.com/skip%20plus%20terms%20and%20conditions%20en"
+verified_at: 2026-11-12

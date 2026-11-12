@@ -1,0 +1,14 @@
+country: US
+region: CA
+name: California
+currency: USD
+timezone: America/Los_Angeles
+tax: null # TODO: CA sales tax varies by city (Santa Cruz vs Claremont); add with source_url
+tipping: { customary: true, default_percent: 15 }
+platforms: [doordash, ubereats, grubhub]
+cities:
+  - { slug: santa-cruz, name: "Santa Cruz", lat: 36.9741, lon: -122.0308 }
+  - { slug: claremont, name: "Claremont", lat: 34.0967, lon: -117.7198 }
+campuses:
+  - { slug: ucsc, name: "University of California, Santa Cruz", city: santa-cruz, lat: 36.9914, lon: -122.0609 }
+  - { slug: cmc, name: "Claremont McKenna College", city: claremont, lat: 34.1017, lon: -117.7092 }

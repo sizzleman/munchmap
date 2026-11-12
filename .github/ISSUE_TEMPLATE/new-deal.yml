@@ -1,0 +1,69 @@
+name: 🍔 New deal
+description: Share a public food deal, student discount or special
+title: "[deal] <Brand>: <short description>"
+labels: [new-deal]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks! Only **public** deals that anyone can use, please. No personal or single-use codes, and no names, emails, order numbers or account screenshots.
+  - type: input
+    id: brand
+    attributes: { label: Restaurant / brand, placeholder: "Antonio's Pizza" }
+    validations: { required: true }
+  - type: input
+    id: deal
+    attributes: { label: What's the deal?, placeholder: "$3 slices every Wednesday" }
+    validations: { required: true }
+  - type: dropdown
+    id: campus
+    attributes:
+      label: Near which campus / city?
+      options:
+        [
+          UIUC,
+          UMass Amherst,
+          UC Santa Cruz,
+          UT Austin,
+          Claremont (CMC / 5Cs),
+          UBC,
+          UofT,
+          Western,
+          Dubai,
+          Nationwide chain deal,
+          Other (say below),
+        ]
+    validations: { required: true }
+  - type: checkboxes
+    id: channels
+    attributes:
+      label: Where does it work?
+      options:
+        - label: Pickup / takeout
+        - label: Dine-in
+        - label: Restaurant's own website or app
+        - label: A delivery app (say which below)
+  - type: input
+    id: when
+    attributes: { label: Days / times (if any), placeholder: "Wednesdays 11am–9pm" }
+  - type: input
+    id: conditions
+    attributes: { label: Conditions, placeholder: "Student ID required, pickup only, min order $10…" }
+  - type: input
+    id: source
+    attributes:
+      label: Public source link
+      description: Restaurant site, official social post, campus page or news. Not an email tracking link.
+    validations: { required: true }
+  - type: input
+    id: expires
+    attributes: { label: Expiry date (if known), placeholder: "2026-12-31" }
+  - type: checkboxes
+    id: confirm
+    attributes:
+      label: Confirm
+      options:
+        - label: This is a public deal and I've removed any personal info.
+          required: true
+        - label: I agree to share this under CC BY-SA 4.0.
+          required: true

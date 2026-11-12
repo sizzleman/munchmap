@@ -1,0 +1,22 @@
+name: 🎓 Add my campus
+description: Request munchmap coverage for your campus or city
+title: "[campus] <Campus name>"
+labels: [new-campus, good first issue]
+body:
+  - type: input
+    id: campus
+    attributes: { label: Campus name }
+    validations: { required: true }
+  - type: input
+    id: city
+    attributes: { label: City, state/province, country }
+    validations: { required: true }
+  - type: textarea
+    id: deals
+    attributes: { label: A few deals students there use (with links if you can) }
+  - type: checkboxes
+    id: help
+    attributes:
+      label: Can you help?
+      options:
+        - label: I can add the campus data file myself (see CONTRIBUTING.md)

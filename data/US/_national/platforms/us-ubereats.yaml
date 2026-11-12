@@ -1,0 +1,26 @@
+id: us-ubereats
+platform: ubereats
+country: US
+name: Uber Eats
+website: https://www.ubereats.com
+memberships:
+  - id: uber-one
+    name: Uber One
+    price: { amount_minor: 999, currency: USD }
+    period: month
+    # Student price $4.99/month after a 4-week free trial (first-time members), 18+ student verification required.
+    student_price: { amount_minor: 499, currency: USD }
+    free_delivery_min_subtotal: null
+    service_fee_reduced: true
+    perks:
+      - "$0 delivery fee on eligible Uber Eats orders over the store minimum"
+      - "Discounted service fee from participating stores when order minimums are met"
+      - "5% back on rides"
+      - "Up to 10% off eligible orders"
+      - "10% back on hotel bookings"
+    # Student plan source: https://www.uber.com/us/en/uberonestudent
+    source_url: "https://www.uber.com/us/en/uber-one/"
+    verified_at: 2026-11-12
+fees_note: "Uber One members get $0 delivery fees and a discounted service fee on eligible orders that meet the store's minimum; taxes and other fees still apply and do not count toward minimums. The US pages did not state a dollar minimum, so free_delivery_min_subtotal is null."
+source_url: "https://www.uber.com/us/en/uber-one/"
+verified_at: 2026-11-12

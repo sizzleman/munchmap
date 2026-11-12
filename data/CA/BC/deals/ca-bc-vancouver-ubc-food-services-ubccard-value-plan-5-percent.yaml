@@ -1,0 +1,18 @@
+id: ca-bc-vancouver-ubc-food-services-ubccard-value-plan-5-percent
+title: "5% off food and non-alcoholic drinks at UBC Food Services with UBCcard Value Plan"
+brand: UBC Food Services
+country: CA
+region: BC
+city: vancouver
+campuses: [ubc]
+channels: [dine_in]
+type: percent_off
+value: { percent: 5 }
+schedule: null
+conditions: "Requires an active UBCcard with the UBCcard Value Plan (load minimum $5 online). Applies to food and non-alcoholic beverages at UBC Food Services locations. Not valid on alcohol, Campus Partners, Pay for Print, UBC Bookstore or campus vending. No academic-year end date stated on source page."
+student_only: false
+promo_code: null
+source_url: https://food.ubc.ca/ubccard-value-plan/
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

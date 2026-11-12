@@ -1,0 +1,18 @@
+id: us-ca-santa-cruz-woodstocks-pizza-6-off-xl-pizza
+title: "$6 off extra-large pizza for students"
+brand: Woodstock's Pizza
+country: US
+region: CA
+city: santa-cruz
+campuses: [ucsc]
+channels: [other]
+type: amount_off
+value: { amount_minor: 600, currency: USD }
+schedule: null
+conditions: "Valid student ID required. Listed as 'anytime' by the Downtown Santa Cruz directory. Channels not specified by source; confirm with the restaurant. Size is extra-large per the source (a Lookout listing said large)."
+student_only: true
+promo_code: null
+source_url: https://downtownsantacruz.com/discover/student-discounts
+verified_at: 2026-11-12
+expires: null
+submitted_by: deal-researcher

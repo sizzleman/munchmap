@@ -1,0 +1,12 @@
+country: US
+region: IL
+name: Illinois
+currency: USD
+timezone: America/Chicago
+tax: null
+tipping: { customary: true, default_percent: 15 }
+platforms: [doordash]
+cities:
+  - { slug: champaign, name: Champaign, lat: 40.11, lon: -88.24 }
+campuses:
+  - { slug: test-u, name: "Test University", city: champaign, lat: 40.10, lon: -88.22 }
