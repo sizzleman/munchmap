@@ -11,6 +11,6 @@
   },
   "dependencies": {
     "@munchmap/core": "0.1.0",
-    "@munchmap/mcp-server": "0.2.0"
+    "@munchmap/mcp-server": "0.3.0"
   }
 }

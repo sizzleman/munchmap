@@ -35,7 +35,7 @@ import {
 } from "@munchmap/core";
 import { z } from "zod";
 
-export const VERSION = "0.2.0";
+export const VERSION = "0.3.0";
 export const SOURCE_URL = "https://github.com/sizzleman/munchmap";
 
 export interface ProfileStore {
