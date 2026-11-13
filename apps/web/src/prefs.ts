@@ -23,8 +23,8 @@ export interface AiSettings {
 }
 export const AI_PRESETS: Record<AiSettings["preset"], Omit<AiSettings, "apiKey" | "preset">> = {
   ollama: { baseUrl: "http://localhost:11434/v1", model: "gemma3:4b" },
-  openai: { baseUrl: "https://api.openai.com/v1", model: "" },
-  gemini: { baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai", model: "" },
+  openai: { baseUrl: "https://api.openai.com/v1", model: "gpt-4o-mini" },
+  gemini: { baseUrl: "https://generativelanguage.googleapis.com/v1beta/openai", model: "gemini-2.5-flash" },
   custom: { baseUrl: "", model: "" },
 };
 export const getAi = (): AiSettings =>
