@@ -23,4 +23,5 @@ jobs:
           git add public/osm
           git diff --cached --quiet && echo "No changes" && exit 0
           git commit -s -m "data: refresh OpenStreetMap snapshots"
+          git pull --rebase origin main
           git push
