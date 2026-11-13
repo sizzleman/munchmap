@@ -105,7 +105,9 @@ describe("munchmap MCP server", () => {
       name: "review_sweep",
       arguments: { restaurant: "Example Pizza", city: "Champaign IL" },
     });
-    const text = (res.messages[0]?.content as { text: string }).text;
+    const content = res.messages[0]?.content;
+    expect(content).toBeDefined();
+    const text = (content as { text: string }).text;
     expect(text).toContain("Never invent reviews");
     expect(text).toContain("place_details");
   });
