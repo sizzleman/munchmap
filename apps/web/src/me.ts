@@ -97,9 +97,22 @@ export function meView(ctx: AppCtx): HTMLElement {
         "Vision model",
         "model",
         "text",
-        ai.preset === "ollama" ? "gemma3:4b" : "a vision-capable model from your provider",
+        ai.preset === "ollama"
+          ? "gemma3:4b"
+          : ai.preset === "gemini"
+            ? "gemini-2.5-flash"
+            : ai.preset === "openai"
+              ? "gpt-4o-mini"
+              : "a vision-capable model from your provider",
       ),
-      ai.preset === "ollama" ? null : field("API key (stored only in this browser)", "apiKey", "password", "sk-…"),
+      ai.preset === "ollama"
+        ? null
+        : field(
+            "API key (stored only in this browser)",
+            "apiKey",
+            "password",
+            ai.preset === "gemini" ? "AIzaSy…" : "sk-…",
+          ),
       ai.preset === "ollama"
         ? h(
             "p",
