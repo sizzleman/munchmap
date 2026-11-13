@@ -4,7 +4,7 @@ import { cleanUrl, isExpired, looksLikePromptInjection } from "../packages/core/
 import { loadDataDir } from "../packages/core/src/node.ts";
 
 const dataDir = join(import.meta.dirname, "..", "data");
-const { deals, regions, platforms, issues } = loadDataDir(dataDir);
+const { deals, regions, platforms, places, issues } = loadDataDir(dataDir);
 const now = new Date();
 const STALE_DAYS = 90;
 
@@ -17,9 +17,23 @@ for (const d of deals) {
     issues.push({ file: d.id, message: "verified_at is in the future" });
 }
 
+for (const p of places) {
+  if (p.menu_verified_at) {
+    const age = (now.getTime() - Date.parse(p.menu_verified_at)) / 86_400_000;
+    if (age > STALE_DAYS) warnings.push(`${p.id}: menu last verified ${Math.floor(age)} days ago`);
+    if (p.menu_verified_at > now.toISOString().slice(0, 10))
+      issues.push({ file: p.id, message: "menu_verified_at is in the future" });
+  }
+  for (const r of p.ratings) {
+    if (r.date > now.toISOString().slice(0, 10))
+      issues.push({ file: p.id, message: `rating date ${r.date} is in the future` });
+  }
+}
+
 // Source links must be clean public URLs: no email tracking / personal query params.
 const urls = [
   ...deals.map((d) => [d.id, d.source_url] as const),
+  ...places.flatMap((p) => (p.menu_source_url ? [[p.id, p.menu_source_url] as const] : [])),
   ...regions.flatMap((r) =>
     [r.tax, ...r.cities.map((c) => c.tax)].flatMap((t) =>
       t ? [[`${r.country}/${r.region} tax`, t.source_url] as const] : [],
@@ -44,9 +58,16 @@ for (const d of deals)
   if (looksLikePromptInjection(`${d.title} ${d.conditions ?? ""} ${d.brand}`))
     issues.push({ file: d.id, message: "text looks like a prompt-injection attempt" });
 
+for (const p of places) {
+  const menuText = p.menu.map((m) => `${m.name} ${m.category ?? ""}`).join(" ");
+  const ratingText = p.ratings.map((r) => r.note ?? "").join(" ");
+  if (looksLikePromptInjection(`${p.name} ${menuText} ${ratingText}`))
+    issues.push({ file: p.id, message: "text looks like a prompt-injection attempt" });
+}
+
 for (const w of warnings) console.warn(`⚠️  ${w}`);
 for (const i of issues) console.error(`❌ ${i.file}: ${i.message}`);
 console.log(
-  `\n${regions.length} regions · ${deals.length} deals · ${platforms.length} platforms · ${issues.length} errors · ${warnings.length} warnings`,
+  `\n${regions.length} regions · ${deals.length} deals · ${places.length} places · ${platforms.length} platforms · ${issues.length} errors · ${warnings.length} warnings`,
 );
 process.exit(issues.length ? 1 : 0);
